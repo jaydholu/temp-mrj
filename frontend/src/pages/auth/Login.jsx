@@ -97,7 +97,7 @@ const Login = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             onSubmit={handleSubmit}
-            className="space-y-6"
+            className="space-y-6 font-ui"
           >
             
             <Input

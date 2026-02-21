@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
-import Button from '../../components/common/Button';
+import { Button } from '../../components/common/Button';
 import { toast } from '../../components/common/Toast';
 import api from '../../api/axios';
 
@@ -10,7 +10,7 @@ const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const token = searchParams.get('token');
-  
+
   const [verifying, setVerifying] = useState(!!token);
   const [verified, setVerified] = useState(false);
   const [error, setError] = useState('');
@@ -37,9 +37,17 @@ const VerifyEmail = () => {
   };
 
   const handleResend = async () => {
+    // Get email from localStorage or prompt user
+    const email = prompt('Please enter your email address:');
+
+    if (!email) {
+      toast.error('Email is required');
+      return;
+    }
+
     setResending(true);
     try {
-      await api.post('/auth/resend-verification');
+      await api.post('/auth/resend-verification', { email });
       toast.success('Verification email sent!');
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Failed to resend email');
@@ -90,14 +98,14 @@ const VerifyEmail = () => {
           className="w-full max-w-md"
         >
           <div className="card text-center p-8 space-y-6">
-            
+
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', delay: 0.2 }}
             >
               <motion.div
-                animate={{ 
+                animate={{
                   scale: [1, 1.2, 1],
                   rotate: [0, 5, -5, 0]
                 }}
@@ -144,17 +152,16 @@ const VerifyEmail = () => {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md space-y-8"
       >
-        
+
         <div className="text-center">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: 'spring', duration: 0.6 }}
-            className={`inline-flex w-20 h-20 items-center justify-center rounded-full mb-4 ${
-              error 
-                ? 'bg-red-100 dark:bg-red-900/30' 
+            className={`inline-flex w-20 h-20 items-center justify-center rounded-full mb-4 ${error
+                ? 'bg-red-100 dark:bg-red-900/30'
                 : 'bg-primary-100 dark:bg-primary-900/30'
-            }`}
+              }`}
           >
             {error ? (
               <XCircle className="text-red-600 dark:text-red-400" size={40} />
@@ -162,7 +169,7 @@ const VerifyEmail = () => {
               <Mail className="text-primary-600 dark:text-primary-400" size={40} />
             )}
           </motion.div>
-          
+
           <h1 className="text-4xl font-bold font-serif text-dark-900 dark:text-dark-50">
             {error ? 'Verification Failed' : 'Verify Your Email'}
           </h1>
@@ -177,7 +184,7 @@ const VerifyEmail = () => {
           transition={{ delay: 0.1 }}
           className="card p-8 space-y-6"
         >
-          
+
           {error ? (
             <div className="space-y-4">
               <div className="glass-strong bg-red-50 dark:bg-red-900/20 p-4 rounded-xl 

@@ -1,12 +1,12 @@
-from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
+from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 from pydantic import EmailStr
 from typing import List
 from jinja2 import Template
-from app.core.settings import settings
+from app.core.config import settings
 
 
 # Email configuration
-configuration = ConnectionConfig(
+conf = ConnectionConfig(
     MAIL_USERNAME=settings.MAIL_USERNAME,
     MAIL_PASSWORD=settings.MAIL_PASSWORD.get_secret_value(),
     MAIL_FROM=settings.MAIL_FROM,
@@ -18,22 +18,7 @@ configuration = ConnectionConfig(
     VALIDATE_CERTS=settings.MAIL_VALIDATE_CERTS,
 )
 
-
-fastmail = FastMail(configuration)
-
-
-async def send_email(
-    subject: str, recipients: List[EmailStr], body: str, html: str = None
-):
-    """Send email"""
-    message = MessageSchema(
-        subject=subject,
-        recipients=recipients,
-        body=body,
-        subtype="html" if html else "plain",
-    )
-
-    await fastmail.send_message(message)
+fastmail = FastMail(conf)
 
 
 # Email Templates
@@ -66,13 +51,12 @@ VERIFICATION_EMAIL_TEMPLATE = """
             <p>If you didn't create this account, please ignore this email.</p>
         </div>
         <div class="footer">
-            <p>&copy; 2025 Code And Cosmos. All rights reserved.</p>
+            <p>&copy; 2025 My Reading Journey. All rights reserved.</p>
         </div>
     </div>
 </body>
 </html>
 """
-
 
 RESET_PASSWORD_TEMPLATE = """
 <!DOCTYPE html>
@@ -103,7 +87,7 @@ RESET_PASSWORD_TEMPLATE = """
             <p><strong>If you didn't request this, please ignore this email.</strong></p>
         </div>
         <div class="footer">
-            <p>&copy; 2025 Code And Cosmos. All rights reserved.</p>
+            <p>&copy; 2025 My Reading Journey. All rights reserved.</p>
         </div>
     </div>
 </body>
@@ -113,18 +97,21 @@ RESET_PASSWORD_TEMPLATE = """
 
 async def send_verification_email(email: str, name: str, token: str):
     """Send email verification"""
-    verify_url = f"{settings.FRONTEND_URL}/verify-email/{token}"
+    verify_url = f"{settings.FRONTEND_URL}/verify-email?token={token}"
+    print(f"Verification URL: {verify_url}")
 
     html = Template(VERIFICATION_EMAIL_TEMPLATE).render(
         name=name, verify_url=verify_url
     )
 
-    await send_email(
+    message = MessageSchema(
         subject="Verify Your Email - My Reading Journey",
         recipients=[email],
-        body="Please verify your email",
-        html=html,
+        body=html,
+        subtype=MessageType.html
     )
+
+    await fastmail.send_message(message)
 
 
 async def send_password_reset_email(email: str, name: str, token: str):
@@ -133,9 +120,12 @@ async def send_password_reset_email(email: str, name: str, token: str):
 
     html = Template(RESET_PASSWORD_TEMPLATE).render(name=name, reset_url=reset_url)
 
-    await send_email(
+    message = MessageSchema(
         subject="Reset Your Password - My Reading Journey",
         recipients=[email],
-        body="Reset your password",
-        html=html,
+        body=html,
+        subtype=MessageType.html
     )
+
+    await fastmail.send_message(message)
+    

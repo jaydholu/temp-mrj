@@ -1,6 +1,5 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles } from 'lucide-react';
 
 const Hero = ({ 
   title, 
@@ -14,8 +13,7 @@ const Hero = ({
       {/* Animated background */}
       {gradient && (
         <div className="absolute inset-0 -z-10">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary-50 via-white to-primary-100 
-                          dark:from-dark-900 dark:via-dark-950 dark:to-dark-900" />
+          <div className="absolute inset-0 bg-primary-200 dark:bg-dark-900"/>
           
           {/* Floating particles */}
           <div className="absolute inset-0">
@@ -74,7 +72,7 @@ const Hero = ({
               className="inline-flex"
             >
               <div className="w-20 h-20 gradient-primary rounded-3xl flex items-center justify-center
-                            shadow-xl shadow-primary-500/30 animate-float">
+                            shadow-xl shadow-primary-500/30">
                 <Icon className="text-white" size={40} />
               </div>
             </motion.div>

@@ -23,9 +23,9 @@ const Settings = () => {
   const [deleting, setDeleting] = useState(false);
 
   const [profileData, setProfileData] = useState({
-    name: '',
+    full_name: '',
+    username: '',
     email: '',
-    userid: '',
     bio: '',
     birthdate: '',
     gender: '',

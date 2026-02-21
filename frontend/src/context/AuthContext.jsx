@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuth = async () => {
     try {
-      const response = await api.get('/auth/register');
+      const response = await api.get('/auth/me');
       setUser(response.data);
     } catch (error) {
       setUser(null);
@@ -24,9 +24,15 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (identifier, password) => {
     const response = await api.post('/auth/login', {
-      identifier,
+      login: identifier,  // Changed from 'identifier'
       password,
     });
+    
+    // Store token
+    if (response.data.access_token) {
+      localStorage.setItem('access_token', response.data.access_token);
+    }
+    
     setUser(response.data.user);
     return response.data;
   };
@@ -43,6 +49,7 @@ export const AuthProvider = ({ children }) => {
       console.error('Logout error:', error);
     } finally {
       setUser(null);
+      localStorage.removeItem('access_token');
     }
   };
 

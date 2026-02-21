@@ -1,12 +1,13 @@
-from fastapi import APIRouter, HTTPException, Response, status
+from fastapi import APIRouter, HTTPException, Response, status, Depends
 from fastapi.concurrency import run_in_threadpool
 from bson import ObjectId
 from jose import JWTError
 from datetime import datetime, timezone, timedelta
 
 from app.core.database import db
+from app.core.dependencies import get_current_active_user
 from app.core.email import send_verification_email, send_password_reset_email
-from app.schemas.auth import SignupRequest, LoginRequest
+from app.schemas.auth import ForgotPasswordRequest, ResendVerificationEmailRequest, ResetPasswordRequest, SignupRequest, LoginRequest
 from app.core.security import (
     get_password_hash, 
     verify_password, 
@@ -32,20 +33,20 @@ async def signup(data: SignupRequest):
             detail="Email already registered! Please use a different email to Sign-up."
         )
     
-    # Check if userid exists
-    existing_userid = await db.users.find_one({"userid": data.userid.lower()})
-    if existing_userid:
+    # Check if user_name exists
+    existing_user_name = await db.users.find_one({"user_name": data.user_name.lower()})
+    if existing_user_name:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="User ID already taken! Choose a different one."
+            detail="User name already taken! Choose a different one."
         )
     
-    hashed_password = await run_in_threadpool(get_password_hash, data.password)
+    hashed_password = await run_in_threadpool(get_password_hash, data.password.get_secret_value())
     
     # Create user
     new_user = {
-        "name": data.name,
-        "userid": data.userid.lower(),
+        "full_name": data.full_name,
+        "user_name": data.user_name.lower(),
         "email": str(data.email).lower(),
         "password": hashed_password,
         "theme": "light",
@@ -65,18 +66,22 @@ async def signup(data: SignupRequest):
     )
     
     # Send verification email
-    await send_verification_email(
-        email=str(data.email),
-        name=data.name,
-        token=verification_token
-    )
+    try:
+        await send_verification_email(
+            email=str(data.email),
+            name=data.full_name,
+            token=verification_token
+        )
+    except Exception as e:
+        print(f"Failed to send verification email: {e}")
+        # Don't fail signup if email fails
     
     return {
         "message": "Account created successfully. Please check your email to verify.",
         "user": {
             "id": user_id,
-            "name": data.name,
-            "userid": data.userid,
+            "full_name": data.full_name,
+            "user_name": data.user_name,
             "email": data.email
         }
     }
@@ -85,23 +90,33 @@ async def signup(data: SignupRequest):
 @router.post("/sign-in")
 @router.post("/login")
 async def login(data: LoginRequest, response: Response):
-    """Login with email/userid and password"""
+    """Login with email/user_name and password"""
 
-    # Find user by email or userid
+    # Find user by email or user_name
     user = await db.users.find_one({
         "$or": [
             {"email": data.login.lower()},
-            {"userid": data.login.lower()}
+            {"user_name": data.login.lower()}
         ]
     })
 
     if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User does not exist")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, 
+            detail="User does not exist"
+        )
 
-    password_is_correct = await run_in_threadpool(verify_password, data.password, user["password"])
+    password_is_correct = await run_in_threadpool(
+        verify_password, 
+        data.password.get_secret_value(), 
+        user["password"]
+    )
 
     if not password_is_correct:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, 
+            detail="Invalid credentials"
+        )
 
     if not user.get("is_verified"):
         raise HTTPException(
@@ -130,9 +145,9 @@ async def login(data: LoginRequest, response: Response):
         key="refresh_token",
         value=refresh_token,
         httponly=True,
-        secure=True,  # HTTPS only in production
+        secure=True,
         samesite="lax",
-        max_age=7 * 24 * 60 * 60  # 7 days
+        max_age=7 * 24 * 60 * 60
     )
 
     return {
@@ -141,12 +156,27 @@ async def login(data: LoginRequest, response: Response):
         "expires_in": 3600,
         "user": {
             "id": str(user["_id"]),
-            "name": user["name"],
-            "userid": user["userid"],
+            "full_name": user["full_name"],
+            "user_name": user["user_name"],
             "email": user["email"],
             "theme": user.get("theme", "light"),
             "profile_picture": user.get("profile_picture")
         }
+    }
+
+
+@router.get("/me")
+async def get_current_user_info(current_user: dict = Depends(get_current_active_user)):
+    """Get current user information"""
+    return {
+        "id": str(current_user["_id"]),
+        "full_name": current_user["full_name"],
+        "user_name": current_user["user_name"],
+        "email": current_user["email"],
+        "theme": current_user.get("theme", "light"),
+        "profile_picture": current_user.get("profile_picture"),
+        "is_verified": current_user.get("is_verified", False),
+        "is_active": current_user.get("is_active", True)
     }
 
 
@@ -186,12 +216,12 @@ async def verify_email(token: str):
 
 
 @router.post("/resend-verification")
-async def resend_verification(email: str):
+async def resend_verification(request: ResendVerificationEmailRequest):
     """Resend verification email"""
-    user = await db.users.find_one({"email": email.lower()})
+    user = await db.users.find_one({"email": request.email.lower()})
     
     if not user:
-        return {"message": "If account exists, verification email has been sent"}      # Don't reveal if email exists
+        return {"message": "If account exists, verification email has been sent"}
     
     if user.get("is_verified"):
         raise HTTPException(
@@ -205,22 +235,29 @@ async def resend_verification(email: str):
         expires_delta=timedelta(minutes=30)
     )
     
-    await send_verification_email(
-        email=user["email"],
-        name=user["name"],
-        token=verification_token
-    )
+    try:
+        await send_verification_email(
+            email=user["email"],
+            name=user["full_name"],
+            token=verification_token
+        )
+    except Exception as e:
+        print(f"Failed to send verification email: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to send verification email"
+        )
     
     return {"message": "Verification email sent"}
 
 
 @router.post("/forgot-password")
-async def forgot_password(email: str):
+async def forgot_password(request: ForgotPasswordRequest):
     """Request password reset"""
-    user = await db.users.find_one({"email": email.lower()})
+    user = await db.users.find_one({"email": request.email.lower()})
     
     if not user:
-        return {"message": "If account exists, password reset email has been sent"}     # Don't reveal if email exists
+        return {"message": "If account exists, password reset email has been sent"}
     
     # Create reset token
     reset_token = create_access_token(
@@ -228,17 +265,20 @@ async def forgot_password(email: str):
         expires_delta=timedelta(minutes=30)
     )
     
-    await send_password_reset_email(
-        email=user["email"],
-        name=user["name"],
-        token=reset_token
-    )
+    try:
+        await send_password_reset_email(
+            email=user["email"],
+            name=user["full_name"],
+            token=reset_token
+        )
+    except Exception as e:
+        print(f"Failed to send password reset email: {e}")
     
     return {"message": "Password reset email sent"}
 
 
 @router.post("/reset-password/{token}")
-async def reset_password(token: str, new_password: str):
+async def reset_password(token: str, request: ResetPasswordRequest):
     """Reset password with token"""
     try:
         payload = decode_token(token)
@@ -249,8 +289,14 @@ async def reset_password(token: str, new_password: str):
                 detail="Invalid reset token"
             )
         
+        if request.password != request.confirm_password:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Passwords do not match"
+            )
+        
         user_id = payload.get("sub")
-        hashed_password = await run_in_threadpool(get_password_hash, new_password)
+        hashed_password = await run_in_threadpool(get_password_hash, request.password)
         
         # Update password
         result = await db.users.update_one(
@@ -276,3 +322,10 @@ async def reset_password(token: str, new_password: str):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid or expired reset token"
         )
+
+
+@router.post("/logout")
+async def logout(response: Response):
+    """Logout user"""
+    response.delete_cookie("refresh_token")
+    return {"message": "Logged out successfully"}

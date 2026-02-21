@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Plus, TrendingUp, BookOpen, Heart, Calendar, Search } from 'lucide-react';
+import { Plus, Book, BookOpen, Heart, Calendar, BookCheck } from 'lucide-react';
 import Hero from '../components/common/Hero';
-import PageHeader from '../components/common/PageHeader';
 import StatsCard from '../components/common/StatsCard';
 import BookCard from '../components/books/BookCard';
 import SearchBar from '../components/common/SearchBar';
@@ -85,32 +84,30 @@ const Home = () => {
           <StatsCard
             title="Total Books"
             value={stats?.total_books || 0}
-            icon={BookOpen}
+            icon={Book}
             color="primary"
             index={0}
           />
           <StatsCard
+            title="Currently Reading"
+            value={stats?.currently_reading || 0}
+            icon={BookOpen}
+            color="primary"
+            index={3}
+          />
+          <StatsCard
             title="Books Finished"
             value={stats?.books_finished || 0}
-            icon={TrendingUp}
-            color="success"
-            trend="up"
-            trendValue="+12% this month"
+            icon={BookCheck}
+            color="primary"
             index={1}
           />
           <StatsCard
             title="Favorites"
             value={stats?.favorites_count || 0}
             icon={Heart}
-            color="warning"
+            color="primary"
             index={2}
-          />
-          <StatsCard
-            title="Currently Reading"
-            value={stats?.currently_reading || 0}
-            icon={Calendar}
-            color="info"
-            index={3}
           />
         </motion.div>
 

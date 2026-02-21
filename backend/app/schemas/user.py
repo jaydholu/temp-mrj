@@ -6,8 +6,8 @@ import re
 class UserResponse(BaseModel):
     """User response schema"""
     id: str
-    name: str
-    userid: str
+    full_name: str
+    user_name: str
     email: EmailStr
     profile_picture: str | None = None
     bio: str | None = None
@@ -26,7 +26,7 @@ class UserResponse(BaseModel):
 
 class UserUpdateRequest(BaseModel):
     """User update request schema"""
-    name: str | None = Field(None, min_length=2, max_length=50)
+    full_name: str | None = Field(None, min_length=2, max_length=50)
     bio: str | None = Field(None, max_length=500)
     birthdate: datetime | None = None
     gender: str | None = None
@@ -39,12 +39,14 @@ class UserUpdateRequest(BaseModel):
     theme: str | None = None
     
     @field_validator('gender')
+    @classmethod
     def validate_gender(cls, v):
         if v and v not in ['male', 'female', 'other', 'prefer_not_to_say']:
             raise ValueError('Invalid gender value')
         return v
     
     @field_validator('theme')
+    @classmethod
     def validate_theme(cls, v):
         if v and v not in ['light', 'dark', 'auto']:
             raise ValueError('Invalid theme value')
@@ -58,6 +60,7 @@ class ChangePasswordRequest(BaseModel):
     confirm_password: str
     
     @field_validator('new_password')
+    @classmethod
     def validate_password(cls, v):
         if len(v) < 8:
             raise ValueError('Password must be at least 8 characters')
@@ -67,13 +70,12 @@ class ChangePasswordRequest(BaseModel):
             raise ValueError('Password must contain a lowercase letter')
         if not re.search(r'\d', v):
             raise ValueError('Password must contain a number')
-        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', v):
-            raise ValueError('Password must contain a special character')
         return v
     
     @field_validator('confirm_password')
-    def passwords_match(cls, v, values):
-        if 'new_password' in values and v != values['new_password']:
+    @classmethod
+    def passwords_match(cls, v, info):
+        if 'new_password' in info.data and v != info.data['new_password']:
             raise ValueError('Passwords do not match')
         return v
     

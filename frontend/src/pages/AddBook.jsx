@@ -87,7 +87,7 @@ const AddBook = () => {
               desc: 'Only title and reading start date are required'
             },
             {
-              title: '⭐ Rate It',
+              title: '⭐  Rate It',
               desc: 'Add your rating to track your favorites'
             },
             {

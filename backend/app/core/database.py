@@ -46,7 +46,7 @@ class Database:
         try:
             # Users collection indexes
             await self._db.users.create_index("email", unique=True)
-            await self._db.users.create_index("userid", unique=True)
+            await self._db.users.create_index("user_name", unique=True)  # Changed from userid
             
             # Books collection indexes
             await self._db.books.create_index("user_id")

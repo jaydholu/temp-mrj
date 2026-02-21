@@ -36,7 +36,7 @@ const Footer = () => {
                 </svg>
               </div>
               <div>
-                <h3 className="font-serif text-xl font-bold text-gradient">My Reading Journey</h3>
+                <h3 className="font-serif text-2xl font-bold text-primary-600">My Reading Journey</h3>
                 <p className="text-sm text-dark-500 dark:text-dark-400">Track, rate, and organize your reading adventures</p>
               </div>
             </div>
@@ -53,8 +53,8 @@ const Footer = () => {
             transition={{ delay: 0.1 }}
             className="space-y-4"
           >
-            <h4 className="font-semibold text-lg text-dark-900 dark:text-dark-50">Connect with us</h4>
-            <div className="flex flex-wrap gap-3">
+            <h4 className="font-semibold text-lg text-end text-dark-900 dark:text-dark-50">Connect with us</h4>
+            <div className="flex flex-row flex-wrap gap-3 justify-end">
               {socialLinks.map(({ icon: Icon, href, label }) => (
                 <motion.a
                   key={label}
@@ -65,8 +65,8 @@ const Footer = () => {
                   whileTap={{ scale: 0.95 }}
                   className="w-11 h-11 rounded-xl bg-dark-100 dark:bg-dark-800 
                            flex items-center justify-center text-dark-600 dark:text-dark-400
-                           hover:bg-primary-500 hover:text-white dark:hover:bg-primary-500
-                           transition-all duration-200 shadow-sm hover:shadow-lg hover:shadow-primary-500/30"
+                           hover:bg-primary-600 hover:text-white dark:hover:bg-primary-600 dark:hover:text-dark-50
+                           transition-all duration-100 shadow-sm hover:shadow-lg hover:shadow-primary-500/30"
                   aria-label={label}
                 >
                   <Icon size={20} />

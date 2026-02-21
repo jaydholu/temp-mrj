@@ -85,8 +85,8 @@ const Navbar = () => {
                 </svg>
               </div>
               <div className="hidden sm:block">
-                <h1 className="font-serif text-xl font-bold text-gradient">My Reading</h1>
-                <p className="text-xs text-dark-500 dark:text-dark-400 -mt-1">Journey</p>
+                <h1 className="font-serif text-2xl font-bold text-gradient">My Reading</h1>
+                <p className="text-sm text-dark-500 dark:text-dark-400 -mt-1">Journey</p>
               </div>
             </Link>
 
@@ -127,10 +127,10 @@ const Navbar = () => {
                           className="absolute top-full right-0 mt-2 w-56 glass-strong rounded-2xl shadow-xl p-2"
                         >
                           <DropdownItem icon={Upload} onClick={() => navigate('/import')}>
-                            Import Books
+                            Import Books / Upload
                           </DropdownItem>
                           <DropdownItem icon={Download} onClick={() => navigate('/export')}>
-                            Export Books
+                            Export Books / Download
                           </DropdownItem>
                         </motion.div>
                       )}

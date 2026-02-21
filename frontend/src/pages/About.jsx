@@ -1,8 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { 
-  BookOpen, Heart, TrendingUp, Users, Target, 
-  Zap, Shield, Sparkles 
+import {
+  BookOpen, Heart, TrendingUp, Users, Target,
+  Zap, Shield, Sparkles
 } from 'lucide-react';
 import Hero from '../components/common/Hero';
 
@@ -50,16 +50,16 @@ const About = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100 
                   dark:from-dark-950 dark:via-dark-900 dark:to-dark-950">
-      
+
       {/* Hero Section */}
       <Hero
-        title="About BookTracker"
+        title="My Reading Journey"
         subtitle="Your personal companion for a more organized reading life"
         icon={Sparkles}
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-24">
-        
+
         {/* Mission Section */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
@@ -70,9 +70,9 @@ const About = () => {
             Our Mission
           </h2>
           <p className="text-xl text-dark-600 dark:text-dark-400 leading-relaxed">
-            We believe that reading is one of life's greatest pleasures. BookTracker was created 
-            to help readers like you organize, track, and celebrate every book you read. Whether 
-            you're a casual reader or a bookworm, we're here to make your reading journey more 
+            We believe that reading is one of life's greatest pleasures. My Reading Journey was created
+            to help readers like you organize, track, and celebrate every book you read. Whether
+            you're a casual reader or a bookworm, we're here to make your reading journey more memorable,
             enjoyable and meaningful.
           </p>
         </motion.section>
@@ -85,7 +85,7 @@ const About = () => {
             className="text-center mb-12"
           >
             <h2 className="text-4xl font-bold font-serif text-dark-900 dark:text-dark-50 mb-4">
-              Everything You Need
+              Everything You Need To Know
             </h2>
             <p className="text-xl text-dark-600 dark:text-dark-400">
               Powerful features to enhance your reading experience
@@ -169,17 +169,17 @@ const About = () => {
             <div className="prose prose-lg dark:prose-invert max-w-none space-y-4 
                           text-dark-600 dark:text-dark-400">
               <p>
-                BookTracker was born from a simple frustration: keeping track of books read, 
-                ratings, and personal notes was scattered across notebooks, spreadsheets, and 
+                My Reading Journey was born from a simple frustration: keeping track of books read,
+                ratings, and personal notes was scattered across notebooks, spreadsheets, and
                 various apps.
               </p>
               <p>
-                We wanted something better—a dedicated space that feels like your own personal 
-                library, where every book you've read has a home, and where you can see your 
+                We wanted something better—a dedicated space that feels like your own personal
+                library, where every book you've read has a home, and where you can see your
                 reading journey unfold over time.
               </p>
               <p>
-                Today, BookTracker helps thousands of readers organize their reading lives, 
+                Today, My Reading Journey helps thousands of readers organize their reading lives,
                 discover patterns in their reading habits, and celebrate their love of books.
               </p>
             </div>
@@ -233,7 +233,7 @@ const About = () => {
             Built with Love
           </h2>
           <p className="text-xl text-dark-600 dark:text-dark-400 max-w-3xl mx-auto mb-8">
-            BookTracker is crafted by a small team of book lovers and developers who are 
+            My Reading Journey is crafted by a small team of book lovers and developers who are
             passionate about creating tools that make reading more enjoyable.
           </p>
           <div className="flex justify-center gap-4">

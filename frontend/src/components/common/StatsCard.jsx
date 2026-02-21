@@ -32,6 +32,11 @@ const StatsCard = ({
       text: 'text-blue-600 dark:text-blue-400',
       ring: 'ring-blue-500/20'
     },
+    favorite: {
+      bg: 'from-pink-600 to-pink-700',
+      text: 'text-pink-600 dark:text-pink-400',
+      ring: 'ring-pink-500/20'
+    }
   };
 
   const selectedColor = colors[color];

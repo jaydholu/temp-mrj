@@ -15,8 +15,8 @@ def serialize_user(user: dict) -> dict:
     """Serialize user document"""
     return {
         "id": str(user["_id"]),
-        "name": user["name"],
-        "userid": user["userid"],
+        "full_name": user["full_name"],
+        "user_name": user["user_name"],
         "email": user["email"],
         "profile_picture": user.get("profile_picture"),
         "bio": user.get("bio"),
@@ -167,7 +167,7 @@ async def delete_profile_pic(
     return {"message": "Profile picture deleted"}
 
 
-@router.delete("/delete-account", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/account", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_account(
     current_user: dict = Depends(get_current_active_user)
 ):

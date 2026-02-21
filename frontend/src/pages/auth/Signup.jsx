@@ -10,13 +10,13 @@ import { useAuth } from '../../context/AuthContext';
 const Signup = () => {
   const navigate = useNavigate();
   const { signup } = useAuth();
-  
+
   const [formData, setFormData] = useState({
-    name: '',
-    userid: '',
+    full_name: '',
+    user_name: '',
     email: '',
     password: '',
-    confirmPassword: '',
+    confirm_password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -40,36 +40,36 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validation
     const newErrors = {};
-    
-    if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
+
+    if (!formData.full_name.trim()) {
+      newErrors.full_name = 'Full name is required';
     }
-    
-    if (!formData.userid.trim()) {
-      newErrors.userid = 'User ID is required';
-    } else if (formData.userid.length < 3) {
-      newErrors.userid = 'User ID must be at least 3 characters';
-    } else if (!/^[a-zA-Z0-9_]+$/.test(formData.userid)) {
-      newErrors.userid = 'User ID can only contain letters, numbers, and underscores';
+
+    if (!formData.user_name.trim()) {
+      newErrors.user_name = 'User name is required';
+    } else if (formData.user_name.length < 3) {
+      newErrors.user_name = 'User name must be at least 3 characters';
+    } else if (!/^[a-zA-Z0-9_]+$/.test(formData.user_name)) {
+      newErrors.user_name = 'User name can only contain letters, numbers, and underscores';
     }
-    
+
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Invalid email format';
     }
-    
+
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (!passwordRequirements.every(req => req.test(formData.password))) {
       newErrors.password = 'Password does not meet requirements';
     }
-    
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+
+    if (formData.password !== formData.confirm_password) {
+      newErrors.confirm_password = 'Passwords do not match';
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -80,10 +80,11 @@ const Signup = () => {
     setLoading(true);
     try {
       await signup({
-        name: formData.name,
-        userid: formData.userid,
+        full_name: formData.full_name,
+        user_name: formData.user_name,
         email: formData.email,
         password: formData.password,
+        confirm_password: formData.confirm_password,
       });
       toast.success('Account created! Please check your email to verify.');
       navigate('/verify-email');
@@ -97,7 +98,7 @@ const Signup = () => {
 
   return (
     <div className="min-h-screen flex">
-      
+
       {/* Left Side - Hero */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
@@ -108,7 +109,7 @@ const Signup = () => {
         {/* Animated background */}
         <div className="absolute inset-0">
           <motion.div
-            animate={{ 
+            animate={{
               rotate: 360,
               scale: [1, 1.2, 1],
             }}
@@ -123,15 +124,15 @@ const Signup = () => {
             transition={{ duration: 4, repeat: Infinity }}
           >
             <svg className="w-24 h-24 mx-auto mb-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </motion.div>
-          
+
           <h2 className="text-5xl font-bold font-serif leading-tight">
             Start Your Reading Adventure
           </h2>
-          
+
           <p className="text-xl text-white/90">
             Join thousands of book lovers tracking their literary journey
           </p>
@@ -151,7 +152,7 @@ const Signup = () => {
                 className="glass-strong p-4 rounded-2xl text-center"
               >
                 <div className="text-3xl mb-2">{item.icon}</div>
-                <div className="text-sm font-medium">{item.text}</div>
+                <div className="text-sm font-medium text-dark-700 dark:text-dark-300">{item.text}</div>
               </motion.div>
             ))}
           </div>
@@ -165,7 +166,7 @@ const Signup = () => {
           animate={{ opacity: 1, x: 0 }}
           className="w-full max-w-md space-y-8 my-8"
         >
-          
+
           {/* Logo */}
           <div className="text-center">
             <motion.div
@@ -177,11 +178,11 @@ const Signup = () => {
                        shadow-primary-500/50 mb-4"
             >
               <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
             </motion.div>
-            
+
             <h1 className="text-4xl font-bold font-serif text-dark-900 dark:text-dark-50">
               Create Account
             </h1>
@@ -198,15 +199,15 @@ const Signup = () => {
             onSubmit={handleSubmit}
             className="space-y-5"
           >
-            
+
             <Input
               label="Full Name"
-              name="fullName"
+              name="full_name"
               type="text"
               icon={User}
-              value={formData.fullName}
+              value={formData.full_name}
               onChange={handleChange}
-              error={errors.fullName}
+              error={errors.full_name}
               placeholder="John Doe"
               autoComplete="name"
             />
@@ -224,13 +225,13 @@ const Signup = () => {
             />
 
             <Input
-              label="Unique username"
-              name="userName"
+              label="User Name"
+              name="user_name"
               type="text"
               icon={User}
-              value={formData.userName}
+              value={formData.user_name}
               onChange={handleChange}
-              error={errors.userName}
+              error={errors.user_name}
               placeholder="johndoe123"
               autoComplete="username"
             />
@@ -274,8 +275,8 @@ const Signup = () => {
                       transition={{ delay: i * 0.05 }}
                       className="flex items-center gap-2 text-sm"
                     >
-                      <CheckCircle 
-                        size={16} 
+                      <CheckCircle
+                        size={16}
                         className={met ? 'text-green-500' : 'text-dark-300 dark:text-dark-700'}
                       />
                       <span className={met ? 'text-green-600 dark:text-green-400' : 'text-dark-500'}>
@@ -290,13 +291,13 @@ const Signup = () => {
             <div className="relative">
               <Input
                 label="Confirm Password"
-                name="confirmPassword"
+                name="confirm_password"
                 type={showConfirmPassword ? 'text' : 'password'}
                 icon={Lock}
-                value={formData.confirmPassword}
+                value={formData.confirm_password}
                 onChange={handleChange}
-                error={errors.confirmPassword}
-                placeholder="Re-enter your password"
+                error={errors.confirm_password}
+                placeholder="Re-enter your password to confirm"
                 autoComplete="new-password"
               />
               <button

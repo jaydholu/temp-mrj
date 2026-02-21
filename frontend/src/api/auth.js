@@ -10,7 +10,7 @@ export const authApi = {
   // Login
   login: async (identifier, password) => {
     const response = await api.post('/auth/login', {
-      identifier,
+      login: identifier,  // Changed from 'identifier'
       password,
     });
     
@@ -51,8 +51,8 @@ export const authApi = {
   },
 
   // Resend verification email
-  resendVerification: async () => {
-    const response = await api.post('/auth/resend-verification');
+  resendVerification: async (email) => {
+    const response = await api.post('/auth/resend-verification', { email });
     return response.data;
   },
 
@@ -64,7 +64,10 @@ export const authApi = {
 
   // Reset password
   resetPassword: async (token, password) => {
-    const response = await api.post(`/auth/reset-password/${token}`, { password });
+    const response = await api.post(`/auth/reset-password/${token}`, { 
+      password,
+      confirm_password: password 
+    });
     return response.data;
   },
 };
