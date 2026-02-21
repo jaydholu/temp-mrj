@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Response, status, Depends
+from fastapi import APIRouter, HTTPException, Request, Response, status, Depends, Cookie
 from fastapi.concurrency import run_in_threadpool
 from bson import ObjectId
 from jose import JWTError
@@ -7,7 +7,7 @@ from datetime import datetime, timezone, timedelta
 from app.core.database import db
 from app.core.dependencies import get_current_active_user
 from app.core.email import send_verification_email, send_password_reset_email
-from app.schemas.auth import ForgotPasswordRequest, ResendVerificationEmailRequest, ResetPasswordRequest, SignupRequest, LoginRequest
+from app.schemas.auth import SignupRequest, LoginRequest, ResendVerificationRequest, ForgotPasswordRequest, ResetPasswordRequest
 from app.core.security import (
     get_password_hash, 
     verify_password, 
@@ -180,6 +180,55 @@ async def get_current_user_info(current_user: dict = Depends(get_current_active_
     }
 
 
+@router.post("/refresh")
+async def refresh_token(
+    request: Request,
+    refresh_token: str = Cookie(None)
+):
+    """Refresh access token using refresh token from cookie"""
+    
+    if not refresh_token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Refresh token not found"
+        )
+    
+    try:
+        payload = decode_token(refresh_token)
+        
+        # Verify it's a refresh token
+        if payload.get("type") != "refresh":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token type"
+            )
+        
+        user_id = payload.get("sub")
+        
+        # Check if user still exists and is active
+        user = await db.users.find_one({"_id": ObjectId(user_id)})
+        if not user or not user.get("is_active"):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User not found or inactive"
+            )
+        
+        # Create new access token
+        new_access_token = create_access_token(data={"sub": user_id})
+        
+        return {
+            "access_token": new_access_token,
+            "token_type": "bearer",
+            "expires_in": 3600
+        }
+        
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired refresh token"
+        )
+
+
 @router.post("/verify-email/{token}")
 async def verify_email(token: str):
     """Verify user email"""
@@ -216,7 +265,7 @@ async def verify_email(token: str):
 
 
 @router.post("/resend-verification")
-async def resend_verification(request: ResendVerificationEmailRequest):
+async def resend_verification(request: ResendVerificationRequest):
     """Resend verification email"""
     user = await db.users.find_one({"email": request.email.lower()})
     

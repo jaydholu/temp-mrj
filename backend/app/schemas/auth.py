@@ -53,7 +53,7 @@ class VerifyEmailRequest(BaseModel):
     token: str
 
 
-class ResendVerificationEmailRequest(BaseModel):
+class ResendVerificationRequest(BaseModel):
     """Resend verification email request"""
     email: EmailStr
 

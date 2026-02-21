@@ -36,8 +36,7 @@ export default {
         }
       },
       fontFamily: {
-        ui: ['Inter', 'Trebuchet MS', 'Segoe UI', 'Tahoma', 'Verdana', 'sans-serif'],
-        sans: ['Noto Sans', 'Consolas', 'system-ui', 'sans-serif'],
+        sans: ['Noto Sans', 'Inter', 'Trebuchet MS', 'Segoe UI', 'Tahoma', 'Verdana', 'Consolas', 'system-ui', 'sans-serif'],
         serif: ['Playfair Display', 'Lora', 'Georgia', 'serif'],
       },
       animation: {

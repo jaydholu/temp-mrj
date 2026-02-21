@@ -14,12 +14,12 @@ const Footer = () => {
   return (
     <footer className="relative mt-20 border-t border-dark-200 dark:border-dark-800">
       {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary-50/30 to-primary-100/50 
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary-200/30 to-primary-300/50 
                       dark:via-primary-900/10 dark:to-primary-900/20 pointer-events-none" />
-      
+
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          
+
           {/* Brand Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -28,11 +28,10 @@ const Footer = () => {
             className="space-y-4"
           >
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center 
-                            shadow-lg shadow-primary-500/30">
-                <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              <div className="w-11 h-11 gradient-primary rounded-lg flex items-center justify-center shadow-md shadow-primary-500/30">
+                <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
               </div>
               <div>
@@ -63,7 +62,7 @@ const Footer = () => {
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-11 h-11 rounded-xl bg-dark-100 dark:bg-dark-800 
+                  className="w-11 h-11 rounded-xl bg-dark-200 dark:bg-dark-800 
                            flex items-center justify-center text-dark-600 dark:text-dark-400
                            hover:bg-primary-600 hover:text-white dark:hover:bg-primary-600 dark:hover:text-dark-50
                            transition-all duration-100 shadow-sm hover:shadow-lg hover:shadow-primary-500/30"

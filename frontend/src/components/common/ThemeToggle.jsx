@@ -12,7 +12,7 @@ const ThemeToggle = ({ className = '' }) => {
       onClick={toggleTheme}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      className={`relative w-14 h-14 rounded-xl bg-dark-100 dark:bg-dark-800 
+      className={`relative w-10 h-10 rounded-xl bg-dark-200/60 dark:bg-dark-800 
                 flex items-center justify-center overflow-hidden
                 hover:bg-dark-200 dark:hover:bg-dark-700 transition-colors
                 group ${className}`}
@@ -30,7 +30,7 @@ const ThemeToggle = ({ className = '' }) => {
         className="absolute inset-0 flex items-center justify-center"
       >
         <Sun 
-          size={22} 
+          size={20} 
           className="text-yellow-500 group-hover:text-yellow-600 transition-colors" 
         />
       </motion.div>
@@ -47,8 +47,8 @@ const ThemeToggle = ({ className = '' }) => {
         className="absolute inset-0 flex items-center justify-center"
       >
         <Moon 
-          size={22} 
-          className="text-blue-400 group-hover:text-blue-500 transition-colors" 
+          size={20} 
+          className="text-dark-50 group-hover:text-dark-100 transition-colors" 
         />
       </motion.div>
 
@@ -59,7 +59,7 @@ const ThemeToggle = ({ className = '' }) => {
         }}
         transition={{ duration: 2, repeat: Infinity }}
         className={`absolute inset-0 rounded-xl blur-md -z-10 ${
-          isDark ? 'bg-blue-400' : 'bg-yellow-400'
+          isDark ? 'bg-dark-800' : 'bg-yellow-400'
         }`}
       />
     </motion.button>

@@ -5,7 +5,7 @@ const Hero = ({
   title, 
   subtitle, 
   icon: Icon,
-  gradient = true,
+  gradient = false,
   children 
 }) => {
   return (

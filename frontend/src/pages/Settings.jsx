@@ -175,7 +175,7 @@ const Settings = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100 
+    <div className="min-h-screen mt-10 bg-gradient-to-br from-primary-50 via-white to-primary-100 
                   dark:from-dark-950 dark:via-dark-900 dark:to-dark-950">
       
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -286,20 +286,11 @@ const Settings = () => {
                     
                     <Input
                       label="Full Name"
-                      name="name"
+                      name="full_name"
                       icon={User}
                       value={profileData.name}
                       onChange={handleProfileChange}
                       placeholder="John Doe"
-                    />
-
-                    <Input
-                      label="User ID"
-                      name="userid"
-                      icon={User}
-                      value={profileData.userid}
-                      disabled
-                      placeholder="johndoe123"
                     />
 
                     <Input
@@ -310,6 +301,15 @@ const Settings = () => {
                       value={profileData.email}
                       disabled
                       placeholder="you@example.com"
+                    />
+
+                    <Input
+                      label="User Name"
+                      name="user_name"
+                      icon={User}
+                      value={profileData.userid}
+                      disabled
+                      placeholder="johndoe123"
                     />
 
                     <div className="space-y-2">

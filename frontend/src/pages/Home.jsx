@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Plus, Book, BookOpen, Heart, Calendar, BookCheck } from 'lucide-react';
+import { Plus, Book, BookOpen, Heart, BookCheck } from 'lucide-react';
 import Hero from '../components/common/Hero';
 import StatsCard from '../components/common/StatsCard';
 import BookCard from '../components/books/BookCard';
@@ -49,14 +49,13 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100 
+    <div className="min-h-screen mt-4 bg-gradient-to-br from-primary-50 via-white to-primary-100 
                   dark:from-dark-950 dark:via-dark-900 dark:to-dark-950">
       
       {/* Hero Section */}
       <Hero
-        title="Your Reading Journey"
+        title="My Reading Journey"
         subtitle="Track, organize, and celebrate every book you read"
-        icon={BookOpen}
       >
         <div className="flex flex-wrap gap-4 justify-center pt-6">
           <Link to="/add-book">
@@ -148,8 +147,8 @@ const Home = () => {
         {/* Books Grid */}
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-dark-900 dark:text-dark-50">
-              Your Library
+            <h2 className="font-bold text-4xl text-center text-primary-500">
+              My Library
               {books.length > 0 && (
                 <span className="ml-3 text-lg font-normal text-dark-600 dark:text-dark-400">
                   ({books.length} {books.length === 1 ? 'book' : 'books'})

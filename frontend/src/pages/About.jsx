@@ -1,8 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import {
-  BookOpen, Heart, TrendingUp, Users, Target,
-  Zap, Shield, Sparkles
+  BookOpen, Heart, TrendingUp, Target,
+  Zap, Shield, Waypoints
 } from 'lucide-react';
 import Hero from '../components/common/Hero';
 
@@ -49,13 +49,13 @@ const About = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100 
-                  dark:from-dark-950 dark:via-dark-900 dark:to-dark-950">
+                  dark:from-dark-950 dark:via-dark-900 dark:to-dark-950 mt-4">
 
       {/* Hero Section */}
       <Hero
         title="My Reading Journey"
-        subtitle="Your personal companion for a more organized reading life"
-        icon={Sparkles}
+        subtitle="Your personal companion for a more organized and memorable reading life"
+        icon={Waypoints}
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-24">
@@ -137,7 +137,7 @@ const About = () => {
               animate={{ opacity: 1, y: 0 }}
               className="text-4xl font-bold font-serif mb-12"
             >
-              Trusted by Thousands
+              Trusted by Thousands of Users
             </motion.h2>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
@@ -163,7 +163,7 @@ const About = () => {
           className="max-w-4xl mx-auto"
         >
           <div className="card p-8 md:p-12">
-            <h2 className="text-4xl font-bold font-serif text-dark-900 dark:text-dark-50 mb-6">
+            <h2 className="text-4xl font-bold font-serif text-center text-dark-900 dark:text-dark-50 mb-6">
               Our Story
             </h2>
             <div className="prose prose-lg dark:prose-invert max-w-none space-y-4 
@@ -181,6 +181,9 @@ const About = () => {
               <p>
                 Today, My Reading Journey helps thousands of readers organize their reading lives,
                 discover patterns in their reading habits, and celebrate their love of books.
+              </p>
+              <p className="text-right">
+                That Frustrated Person <br /> - Jay Manoj Dholu
               </p>
             </div>
           </div>
