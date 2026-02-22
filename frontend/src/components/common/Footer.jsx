@@ -4,11 +4,11 @@ import { Github, Linkedin, Twitter, Instagram, Mail, Heart } from 'lucide-react'
 
 const Footer = () => {
   const socialLinks = [
-    { icon: Github, href: 'https://github.com/organizations/code-cosmos-tech', label: 'GitHub' },
+    { icon: Mail, href: 'mailto:codecosmostech@gmail.com', label: 'Email' },
     { icon: Linkedin, href: 'https://linkedin.com/in/codecosmostech', label: 'LinkedIn' },
     { icon: Twitter, href: 'https://x.com/codecosmostech', label: 'Twitter' },
     { icon: Instagram, href: 'https://www.instagram.com/codecosmostech/', label: 'Instagram' },
-    { icon: Mail, href: 'mailto:codecosmostech@gmail.com', label: 'Email' },
+    { icon: Github, href: 'https://github.com/organizations/code-cosmos-tech', label: 'GitHub' },
   ];
 
   return (
@@ -52,7 +52,7 @@ const Footer = () => {
             transition={{ delay: 0.1 }}
             className="space-y-4"
           >
-            <h4 className="font-semibold text-lg text-end text-dark-900 dark:text-dark-50">Connect with us</h4>
+            <h4 className="font-bold text-xl text-end text-dark-900 dark:text-dark-50">Connect with us</h4>
             <div className="flex flex-row flex-wrap gap-3 justify-end">
               {socialLinks.map(({ icon: Icon, href, label }) => (
                 <motion.a

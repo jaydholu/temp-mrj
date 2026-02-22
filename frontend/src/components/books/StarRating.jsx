@@ -21,21 +21,27 @@ const StarRating = ({
   const starSize = sizes[size];
   const displayRating = hoverRating || rating;
 
-  const handleClick = (value) => {
+  const handleClick = (starIndex, offsetX, starWidth) => {
     if (!readonly && onChange) {
-      // Allow half-star ratings
-      onChange(value);
+      const position = offsetX / starWidth;
+      const decimalPart = Math.round(position * 10) / 10;
+      const newRating = starIndex - 1 + decimalPart;
+      
+      const clampedRating = Math.max(0, Math.min(5, Math.round(newRating * 10) / 10));
+      onChange(clampedRating);
     }
   };
 
-  const handleMouseMove = (index, e) => {
+  const handleMouseMove = (starIndex, e) => {
     if (readonly || !onChange) return;
     
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
-    const isHalf = x < rect.width / 2;
+    const position = x / rect.width;
+    const decimalPart = Math.round(position * 10) / 10;
+    const newHoverRating = starIndex - 1 + decimalPart;
     
-    setHoverRating(isHalf ? index - 0.5 : index);
+    setHoverRating(Math.max(0, Math.min(5, Math.round(newHoverRating * 10) / 10)));
   };
 
   const handleMouseLeave = () => {
@@ -43,14 +49,22 @@ const StarRating = ({
   };
 
   const renderStar = (index) => {
-    const filled = displayRating >= index;
-    const half = displayRating >= index - 0.5 && displayRating < index;
+    const starStart = index - 1;
+    const starEnd = index;
+    const fillAmount = Math.max(0, Math.min(1, displayRating - starStart));
+    
+    const filled = fillAmount === 1;
+    const partial = fillAmount > 0 && fillAmount < 1;
 
     return (
       <motion.button
         key={index}
         type="button"
-        onClick={() => handleClick(index)}
+        onClick={(e) => {
+          const rect = e.currentTarget.getBoundingClientRect();
+          const offsetX = e.clientX - rect.left;
+          handleClick(index, offsetX, rect.width);
+        }}
         onMouseMove={(e) => handleMouseMove(index, e)}
         onMouseLeave={handleMouseLeave}
         disabled={readonly}
@@ -67,28 +81,13 @@ const StarRating = ({
           fill="currentColor"
         />
 
-        {/* Filled star */}
-        {filled && (
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="absolute inset-0"
-          >
-            <Star
-              size={starSize}
-              className="text-yellow-400"
-              fill="currentColor"
-            />
-          </motion.div>
-        )}
-
-        {/* Half star */}
-        {half && !filled && (
+        {/* Filled/Partial star */}
+        {(filled || partial) && (
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             className="absolute inset-0 overflow-hidden"
-            style={{ width: '50%' }}
+            style={{ width: `${fillAmount * 100}%` }}
           >
             <Star
               size={starSize}
@@ -99,7 +98,7 @@ const StarRating = ({
         )}
 
         {/* Hover effect */}
-        {!readonly && hoverRating >= index - 0.5 && (
+        {!readonly && hoverRating >= starStart && (
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}

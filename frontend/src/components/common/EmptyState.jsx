@@ -75,7 +75,7 @@ const EmptyState = ({
                 repeat: Infinity,
                 delay: i * 0.2,
               }}
-              className="w-2 h-8 bg-primary-200 dark:bg-primary-800/30 rounded-full"
+              className="w-2 h-8 bg-primary-400 dark:bg-primary-700/30 rounded-full"
             />
           ))}
         </div>

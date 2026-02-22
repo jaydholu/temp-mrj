@@ -19,22 +19,50 @@ const Home = () => {
   const [currentFilters, setCurrentFilters] = useState({});
 
   useEffect(() => {
-    fetchStats();
+    const loadInitialData = async () => {
+      try {
+        await Promise.all([
+          fetchBooks({ sort: sortBy }),
+          fetchStats()
+        ]);
+      } catch (error) {
+        console.error('Failed to load data:', error);
+      }
+    };
+    loadInitialData();
   }, []);
 
-  const handleSearch = (query) => {
-    searchBooks({ ...currentFilters, search: query });
+  const handleSearch = async (query) => {
+    try {
+      await fetchBooks({ ...currentFilters, search: query, sort: sortBy });
+    } catch (error) {
+      toast.error('Search failed');
+    }
   };
 
-  const handleFilterApply = (filters) => {
+  const handleFilterApply = async (filters) => {
     setCurrentFilters(filters);
-    searchBooks(filters);
+    try {
+      await fetchBooks({ ...filters, sort: sortBy });
+    } catch (error) {
+      toast.error('Failed to apply filters');
+    }
+  };
+
+  const handleSortChange = async (newSort) => {
+    setSortBy(newSort);
+    try {
+      await fetchBooks({ ...currentFilters, sort: newSort });
+    } catch (error) {
+      toast.error('Failed to sort books');
+    }
   };
 
   const handleDelete = async (bookId) => {
     try {
       await deleteBook(bookId);
       toast.success('Book deleted successfully');
+      await fetchStats();
     } catch (error) {
       toast.error('Failed to delete book');
     }
@@ -43,15 +71,16 @@ const Home = () => {
   const handleFavoriteToggle = async (bookId) => {
     try {
       await toggleFavorite(bookId);
+      await fetchStats();
     } catch (error) {
       toast.error('Failed to update favorite');
     }
   };
 
   return (
-    <div className="min-h-screen mt-4 bg-gradient-to-br from-primary-50 via-white to-primary-100 
+    <div className="min-h-screen pt-20 bg-gradient-to-br from-primary-50 via-white to-primary-100 
                   dark:from-dark-950 dark:via-dark-900 dark:to-dark-950">
-      
+
       {/* Hero Section */}
       <Hero
         title="My Reading Journey"
@@ -73,7 +102,7 @@ const Home = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        
+
         {/* Stats Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -135,7 +164,7 @@ const Home = () => {
         )}
 
         {/* Search & Filters */}
-        <div className="mb-8">
+        <div className="mt-8 mb-8">
           <SearchBar
             onSearch={handleSearch}
             onFilterToggle={() => setShowFilters(true)}

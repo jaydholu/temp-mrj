@@ -62,6 +62,10 @@ const SearchBar = ({
         </motion.div>
       </div>
 
+      <Button type="submit" variant="primary">
+        Search
+      </Button>
+
       {showFilters && (
         <Button
           type="button"
@@ -72,10 +76,6 @@ const SearchBar = ({
           Filters
         </Button>
       )}
-
-      <Button type="submit" variant="primary">
-        Search
-      </Button>
     </form>
   );
 };
