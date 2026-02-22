@@ -4,7 +4,6 @@ import { useAuth } from '../context/AuthContext';
 
 // Layouts
 import RootLayout from '../layouts/RootLayout';
-import AuthLayout from '../layouts/AuthLayout';
 
 // Auth Pages
 import Login from "../pages/auth/Login"; 
@@ -19,6 +18,8 @@ import AddBook from '../pages/AddBook';
 import ViewBook from '../pages/ViewBook';
 import EditBook from '../pages/EditBook';
 import Favorites from '../pages/Favorites';
+import ImportBooks from '../components/data/ImportBooks';
+import ExportBooks from '../components/data/ExportBooks';
 import Settings from '../pages/Settings';
 import About from '../pages/About';
 
@@ -106,6 +107,22 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <Favorites />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'import',
+        element: (
+          <ProtectedRoute>
+            <ImportBooks />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'export',
+        element: (
+          <ProtectedRoute>
+            <ExportBooks />
           </ProtectedRoute>
         ),
       },

@@ -11,7 +11,7 @@ import { toast } from '../components/common/Toast';
 import { useBooks } from '../hooks/useBooks';
 
 const Favorites = () => {
-  const { books, loading, deleteBook, toggleFavorite, getFavorites } = useBooks();
+  const { loading, deleteBook, toggleFavorite, getFavorites } = useBooks();
   const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
@@ -21,7 +21,8 @@ const Favorites = () => {
   const loadFavorites = async () => {
     try {
       const data = await getFavorites();
-      setFavorites(data);
+      // API returns paginated response: { books: [], total, page, ... }
+      setFavorites(data?.books || []);
     } catch (error) {
       toast.error('Failed to load favorites');
     }
