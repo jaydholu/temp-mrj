@@ -115,3 +115,4 @@ class BookStatsResponse(BaseModel):
     books_by_genre: dict
     books_by_year: dict
     total_pages: int
+    

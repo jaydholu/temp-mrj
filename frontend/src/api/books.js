@@ -15,7 +15,7 @@ export const booksApi = {
 
   // Create book
   createBook: async (formData) => {
-    const response = await api.post('/books', formData, {
+    const response = await api.post('/books/', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

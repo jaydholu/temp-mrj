@@ -53,3 +53,4 @@ class User(BaseModel):
 class UserInDB(User):
     """User model with hashed password"""
     password: SecretStr
+    

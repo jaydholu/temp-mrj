@@ -78,7 +78,7 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen pt-20 bg-gradient-to-br from-primary-50 via-white to-primary-100 
+    <div className="min-h-screen pt-4 bg-gradient-to-br from-primary-50 via-white to-primary-100 
                   dark:from-dark-950 dark:via-dark-900 dark:to-dark-950">
 
       {/* Hero Section */}
@@ -101,7 +101,7 @@ const Home = () => {
       </Hero>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
         {/* Stats Section */}
         <motion.div
@@ -174,9 +174,9 @@ const Home = () => {
         </div>
 
         {/* Books Grid */}
-        <div className="space-y-6">
+        <div className="mt-8 space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="font-bold text-4xl text-center text-primary-500">
+            <h2 className="font-bold text-4xl text-primary-500">
               My Library
               {books.length > 0 && (
                 <span className="ml-3 text-lg font-normal text-dark-600 dark:text-dark-400">

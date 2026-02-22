@@ -437,7 +437,7 @@ async def toggle_favorite(
 @router.post("/book/{book_id}/cover", response_model=BookResponse)
 async def upload_cover_image(
     book_id: str,
-    file: UploadFile = File(...),
+    file: UploadFile = File(None),
     current_user: dict = Depends(get_current_active_user)
 ):
     """Upload book cover image"""

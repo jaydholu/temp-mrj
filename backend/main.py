@@ -91,20 +91,49 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    """Handle validation errors"""
+    """Handle validation errors - properly format without trying to serialize bytes"""
+    errors = []
+    
+    for error in exc.errors():
+        error_detail = {
+            "loc": error["loc"],
+            "msg": error["msg"],
+            "type": error["type"]
+        }
+        
+        # Don't include 'input' field if it contains bytes or other non-serializable data
+        if "input" in error:
+            input_value = error["input"]
+            # Skip bytes, file objects, or other complex types
+            if not isinstance(input_value, (bytes, bytearray)):
+                try:
+                    import json
+                    json.dumps(input_value)
+                    error_detail["input"] = input_value
+                except (TypeError, ValueError):
+                    pass
+        
+        errors.append(error_detail)
+    
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-        content={"detail": exc.errors(), "body": exc.body}
+        content={
+            "detail": "Validation error",
+            "errors": errors
+        }
     )
 
 
 @app.exception_handler(Exception)
 async def general_exception_handler(request: Request, exc: Exception):
-    """Handle unexpected exceptions"""
-    logger.error(f"Unexpected error: {exc}", exc_info=True)
+    """Handle all other exceptions"""
+    logger.error(f"Unexpected error: {str(exc)}", exc_info=True)
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content={"detail": "Internal server error"}
+        content={
+            "detail": "Internal server error",
+            "error": str(exc) if settings.DEBUG else "An unexpected error occurred"
+        }
     )
 
 

@@ -91,3 +91,4 @@ class ResetPasswordRequest(BaseModel):
         if pwd != confirm:
             raise ValueError('Passwords do not match')
         return v
+    

@@ -91,7 +91,7 @@ const StarRating = ({
           >
             <Star
               size={starSize}
-              className="text-yellow-400"
+              className="text-primary-500"
               fill="currentColor"
             />
           </motion.div>
