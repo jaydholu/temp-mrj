@@ -95,8 +95,8 @@ const BookCard = ({ book, onDelete, onFavoriteToggle, index = 0 }) => {
           <div className="flex flex-col flex-1 p-5">
 
             {/* Title & Author */}
-            <div className="flex-1 space-y-1 mb-3">
-              <h3 className="font-bold text-lg leading-tight line-clamp-2 text-dark-900 dark:text-dark-50">
+            <div className="flex-1 space-y-1 mb-1">
+              <h3 className="font-bold text-lg leading-tight line-clamp-2 text-dark-900 dark:text-dark-50 mb-1">
                 <Link to={`/books/${book.id}`} className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors"> {book.title} </Link>
               </h3>
               {book.author && (

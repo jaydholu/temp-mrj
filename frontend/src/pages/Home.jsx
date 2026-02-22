@@ -83,7 +83,7 @@ const Home = () => {
   const bookList = Array.isArray(books) ? books : (books?.books || []);
 
   return (
-    <div className="min-h-screen pt-4 bg-gradient-to-br from-primary-50 via-white to-primary-100 
+    <div className="min-h-screen pt-4 pb-16 bg-gradient-to-br from-primary-50 via-white to-primary-100 
                   dark:from-dark-950 dark:via-dark-900 dark:to-dark-950">
 
       {/* Hero Section */}
@@ -175,7 +175,7 @@ const Home = () => {
         </div>
 
         {/* Books Grid */}
-        <div className="mt-8 space-y-6">
+        <div className="mt-12 space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="font-bold text-4xl text-primary-500">
               My Library
@@ -225,7 +225,7 @@ const Home = () => {
               }
             />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 gap-y-10 pt-2">
               {bookList.map((book, index) => (
                 <BookCard
                   key={book.id}

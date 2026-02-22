@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   User, Mail, Lock, Calendar, MapPin, Globe, 
-  BookOpen, Target, Heart, Image, Trash2, Save
+  BookOpen, Target, SlidersHorizontal, Image, Trash2, Save
 } from 'lucide-react';
 import PageHeader from '../components/common/PageHeader';
 import Input from '../components/common/Input';
@@ -169,7 +169,7 @@ const Settings = () => {
 
   const tabs = [
     { id: 'profile', label: 'Profile', icon: User },
-    { id: 'preferences', label: 'Preferences', icon: Heart },
+    { id: 'preferences', label: 'Preferences', icon: SlidersHorizontal },
     { id: 'security', label: 'Security', icon: Lock },
     { id: 'danger', label: 'Danger Zone', icon: Trash2 },
   ];
