@@ -15,10 +15,8 @@ const BookForm = ({ initialData, onSubmit, loading = false }) => {
     genre: initialData?.genre || '',
     rating: initialData?.rating || 0,
     description: initialData?.description || '',
-    reading_started: initialData?.reading_started ? 
-      new Date(initialData.reading_started).toISOString().split('T')[0] : '',
-    reading_finished: initialData?.reading_finished ? 
-      new Date(initialData.reading_finished).toISOString().split('T')[0] : '',
+    reading_started: formatDateForInput(initialData?.reading_started),
+    reading_finished: formatDateForInput(initialData?.reading_finished),
     page_count: initialData?.page_count || '',
     publisher: initialData?.publisher || '',
     publication_year: initialData?.publication_year || '',
@@ -41,15 +39,24 @@ const BookForm = ({ initialData, onSubmit, loading = false }) => {
         toast.error('File must be an image under 10MB');
         return;
       }
-      
+
       const file = acceptedFiles[0];
       setCoverImage(file);
-      
+
       const reader = new FileReader();
       reader.onload = () => setCoverPreview(reader.result);
       reader.readAsDataURL(file);
     }
   });
+
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return '';
+    const d = new Date(dateString);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -62,7 +69,7 @@ const BookForm = ({ initialData, onSubmit, loading = false }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validation
     const newErrors = {};
     if (!formData.title.trim()) {
@@ -71,8 +78,8 @@ const BookForm = ({ initialData, onSubmit, loading = false }) => {
     if (!formData.reading_started) {
       newErrors.reading_started = 'Start date is required';
     }
-    if (formData.reading_finished && formData.reading_started && 
-        new Date(formData.reading_finished) < new Date(formData.reading_started)) {
+    if (formData.reading_finished && formData.reading_started &&
+      new Date(formData.reading_finished) < new Date(formData.reading_started)) {
       newErrors.reading_finished = 'Finish date cannot be before start date';
     }
 
@@ -89,7 +96,7 @@ const BookForm = ({ initialData, onSubmit, loading = false }) => {
         submitData.append(key, formData[key]);
       }
     });
-    
+
     if (coverImage) {
       submitData.append('cover_image', coverImage);
     }
@@ -104,13 +111,13 @@ const BookForm = ({ initialData, onSubmit, loading = false }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      
+
       {/* Cover Image Upload */}
       <div className="space-y-3">
         <label className="block text-sm font-medium text-dark-700 dark:text-dark-300">
           Cover Image
         </label>
-        
+
         {coverPreview ? (
           <div className="relative w-full max-w-sm mx-auto">
             <motion.div
@@ -118,9 +125,9 @@ const BookForm = ({ initialData, onSubmit, loading = false }) => {
               animate={{ opacity: 1, scale: 1 }}
               className="relative rounded-2xl overflow-hidden shadow-lg"
             >
-              <img 
-                src={coverPreview} 
-                alt="Cover preview" 
+              <img
+                src={coverPreview}
+                alt="Cover preview"
                 className="w-full h-80 object-cover"
               />
               <button
@@ -138,11 +145,10 @@ const BookForm = ({ initialData, onSubmit, loading = false }) => {
           <div
             {...getRootProps()}
             className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer
-                       transition-all duration-300 ${
-              isDragActive 
-                ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' 
+                       transition-all duration-300 ${isDragActive
+                ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
                 : 'border-dark-300 dark:border-dark-700 hover:border-primary-500 dark:hover:border-primary-500'
-            }`}
+              }`}
           >
             <input {...getInputProps()} />
             <motion.div
@@ -178,7 +184,7 @@ const BookForm = ({ initialData, onSubmit, loading = false }) => {
         <h3 className="text-xl font-bold text-dark-900 dark:text-dark-50 mb-4">
           Basic Information
         </h3>
-        
+
         <Input
           label="Title"
           name="title"
@@ -308,6 +314,8 @@ const BookForm = ({ initialData, onSubmit, loading = false }) => {
               <option value="hardcover">Hardcover</option>
               <option value="ebook">E-book</option>
               <option value="audiobook">Audiobook</option>
+              <option value="pdf">PDF</option>
+              <option value="other">Other</option>
             </select>
           </div>
         </div>

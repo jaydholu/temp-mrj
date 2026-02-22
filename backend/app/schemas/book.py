@@ -107,12 +107,13 @@ class BooksListResponse(BaseModel):
 
 
 class BookStatsResponse(BaseModel):
-    total_books: int
-    books_finished: int
-    books_reading: int
-    favorite_books: int
     average_rating: float
     books_by_genre: dict
     books_by_year: dict
+    books_finished: int
+    books_rated_count: int
+    books_reading: int
+    favorite_books: int
+    total_books: int
     total_pages: int
     

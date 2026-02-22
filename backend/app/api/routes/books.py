@@ -4,11 +4,11 @@ from datetime import datetime, timezone
 import math
 
 from app.schemas.book import (
-    BookCreateRequest, 
-    BookUpdateRequest, 
+    BookCreateRequest,
+    BookUpdateRequest,
     BookResponse,
     BooksListResponse,
-    BookStatsResponse
+    BookStatsResponse,
 )
 from app.core.database import db
 from app.core.dependencies import get_current_active_user
@@ -39,17 +39,16 @@ def serialize_book(book: dict) -> dict:
         "language": book.get("language", "English"),
         "format": book.get("format"),
         "created_at": book["created_at"],
-        "updated_at": book["updated_at"]
+        "updated_at": book["updated_at"],
     }
 
 
 @router.post("/", response_model=BookResponse, status_code=status.HTTP_201_CREATED)
 async def create_book(
-    book_data: BookCreateRequest,
-    current_user: dict = Depends(get_current_active_user)
+    book_data: BookCreateRequest, current_user: dict = Depends(get_current_active_user)
 ):
     """Create a new book entry"""
-    
+
     # Prepare book document
     new_book = {
         "user_id": current_user["_id"],
@@ -69,14 +68,14 @@ async def create_book(
         "language": book_data.language or "English",
         "format": book_data.format,
         "created_at": datetime.now(timezone.utc),
-        "updated_at": datetime.now(timezone.utc)
+        "updated_at": datetime.now(timezone.utc),
     }
-    
+
     result = await db.books.insert_one(new_book)
-    
+
     # Fetch created book
     created_book = await db.books.find_one({"_id": result.inserted_id})
-    
+
     return serialize_book(created_book)
 
 
@@ -92,40 +91,38 @@ async def list_books(
     sort: str = Query("date_desc"),
     page: int = Query(1, gt=0),
     limit: int = Query(20, gt=0, le=100),
-    current_user: dict = Depends(get_current_active_user)
+    current_user: dict = Depends(get_current_active_user),
 ):
     """List user's books with filters and pagination"""
-    
+
     # Build query
     query = {"user_id": current_user["_id"]}
-    
+
     if favorite is not None:
         query["is_favorite"] = favorite
-    
+
     if genre:
         query["genre"] = {"$regex": genre, "$options": "i"}
-    
+
     if author:
         query["author"] = {"$regex": author, "$options": "i"}
-    
+
     if rating_min is not None or rating_max is not None:
         query["rating"] = {}
         if rating_min is not None:
             query["rating"]["$gte"] = rating_min
         if rating_max is not None:
             query["rating"]["$lte"] = rating_max
-    
+
     if year:
-        query["$expr"] = {
-            "$eq": [{"$year": "$reading_started"}, year]
-        }
-    
+        query["$expr"] = {"$eq": [{"$year": "$reading_started"}, year]}
+
     if search:
         query["$or"] = [
             {"title": {"$regex": search, "$options": "i"}},
-            {"author": {"$regex": search, "$options": "i"}}
+            {"author": {"$regex": search, "$options": "i"}},
         ]
-    
+
     # Build sort
     sort_options = {
         "date_asc": [("reading_started", 1)],
@@ -134,28 +131,28 @@ async def list_books(
         "title_desc": [("title", -1)],
         "rating_desc": [("rating", -1)],
         "author_asc": [("author", 1)],
-        "author_desc": [("author", -1)]
+        "author_desc": [("author", -1)],
     }
     sort_by = sort_options.get(sort, [("reading_started", -1)])
-    
+
     # Count total
     total = await db.books.count_documents(query)
-    
+
     # Calculate pagination
     skip = (page - 1) * limit
     pages = math.ceil(total / limit)
-    
+
     # Fetch books
     cursor = db.books.find(query).sort(sort_by).skip(skip).limit(limit)
     books = await cursor.to_list(length=limit)
-    
+
     return {
         "books": [serialize_book(book) for book in books],
         "total": total,
         "page": page,
         "pages": pages,
         "has_next": page < pages,
-        "has_prev": page > 1
+        "has_prev": page > 1,
     }
 
 
@@ -163,38 +160,35 @@ async def list_books(
 async def list_favorite_books(
     page: int = Query(1, gt=0),
     limit: int = Query(20, gt=0, le=100),
-    current_user: dict = Depends(get_current_active_user)
+    current_user: dict = Depends(get_current_active_user),
 ):
     """List user's favorite books"""
-    
-    query = {
-        "user_id": current_user["_id"],
-        "is_favorite": True
-    }
-    
+
+    query = {"user_id": current_user["_id"], "is_favorite": True}
+
     total = await db.books.count_documents(query)
     skip = (page - 1) * limit
     pages = math.ceil(total / limit)
-    
-    cursor = db.books.find(query).sort([("reading_started", -1)]).skip(skip).limit(limit)
+
+    cursor = (
+        db.books.find(query).sort([("reading_started", -1)]).skip(skip).limit(limit)
+    )
     books = await cursor.to_list(length=limit)
-    
+
     return {
         "books": [serialize_book(book) for book in books],
         "total": total,
         "page": page,
         "pages": pages,
         "has_next": page < pages,
-        "has_prev": page > 1
+        "has_prev": page > 1,
     }
 
 
 @router.get("/stats", response_model=BookStatsResponse)
-async def get_book_stats(
-    current_user: dict = Depends(get_current_active_user)
-):
+async def get_book_stats(current_user: dict = Depends(get_current_active_user)):
     """Get user's reading statistics"""
-    
+
     pipeline = [
         {"$match": {"user_id": current_user["_id"]}},
         {
@@ -207,88 +201,84 @@ async def get_book_stats(
                 "favorite_books": {
                     "$sum": {"$cond": ["$is_favorite", 1, 0]}
                 },
-                "average_rating": {"$avg": "$rating"},
-                "total_pages": {"$sum": "$page_count"}
+                "books_rated_count": {
+                    "$sum": {"$cond": [{"$gt": ["$rating", 0]}, 1, 0]}
+                },
+                "average_rating": {
+                    "$avg": {"$cond": [{"$gt": ["$rating", 0]}, "$rating", "$$REMOVE"]}
+                },
+                "total_pages": {"$sum": "$page_count"},
             }
-        }
+        },
     ]
-    
+
     result = await db.books.aggregate(pipeline).to_list(length=1)
-    
+
     if not result:
         return {
-            "total_books": 0,
-            "books_finished": 0,
-            "books_reading": 0,
-            "favorite_books": 0,
             "average_rating": 0.0,
             "books_by_genre": {},
             "books_by_year": {},
-            "total_pages": 0
+            "books_finished": 0,
+            "books_rated_count": 0,
+            "books_reading": 0,
+            "favorite_books": 0,
+            "total_pages": 0,
+            "total_books": 0,
         }
-    
+
     stats = result[0]
-    
+
     # Get books by genre
     genre_pipeline = [
         {"$match": {"user_id": current_user["_id"], "genre": {"$ne": None}}},
         {"$group": {"_id": "$genre", "count": {"$sum": 1}}},
-        {"$sort": {"count": -1}}
+        {"$sort": {"count": -1}},
     ]
     genres = await db.books.aggregate(genre_pipeline).to_list(length=None)
     books_by_genre = {g["_id"]: g["count"] for g in genres}
-    
+
     # Get books by year
     year_pipeline = [
         {"$match": {"user_id": current_user["_id"]}},
-        {
-            "$group": {
-                "_id": {"$year": "$reading_started"},
-                "count": {"$sum": 1}
-            }
-        },
-        {"$sort": {"_id": -1}}
+        {"$group": {"_id": {"$year": "$reading_started"}, "count": {"$sum": 1}}},
+        {"$sort": {"_id": -1}},
     ]
     years = await db.books.aggregate(year_pipeline).to_list(length=None)
     books_by_year = {str(y["_id"]): y["count"] for y in years}
-    
+
     return {
-        "total_books": stats["total_books"],
-        "books_finished": stats["books_finished"],
-        "books_reading": stats["total_books"] - stats["books_finished"],
-        "favorite_books": stats["favorite_books"],
         "average_rating": round(stats.get("average_rating", 0), 1),
         "books_by_genre": books_by_genre,
         "books_by_year": books_by_year,
-        "total_pages": stats.get("total_pages", 0) or 0
+        "books_finished": stats["books_finished"],
+        "books_rated_count": stats.get("books_rated_count", 0) or 0,
+        "books_reading": stats["total_books"] - stats["books_finished"],
+        "favorite_books": stats["favorite_books"],
+        "total_books": stats["total_books"],
+        "total_pages": stats.get("total_pages", 0) or 0,
     }
 
 
 @router.get("/book/{book_id}", response_model=BookResponse)
-async def get_book(
-    book_id: str,
-    current_user: dict = Depends(get_current_active_user)
-):
+async def get_book(book_id: str, current_user: dict = Depends(get_current_active_user)):
     """Get a single book by ID"""
-    
+
     try:
-        book = await db.books.find_one({
-            "_id": ObjectId(book_id),
-            "user_id": current_user["_id"]
-        })
-        
+        book = await db.books.find_one(
+            {"_id": ObjectId(book_id), "user_id": current_user["_id"]}
+        )
+
         if not book:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Book not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Book not found"
             )
-        
+
         return serialize_book(book)
-        
+
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid book ID"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid book ID"
         )
 
 
@@ -296,141 +286,123 @@ async def get_book(
 async def update_book(
     book_id: str,
     book_data: BookUpdateRequest,
-    current_user: dict = Depends(get_current_active_user)
+    current_user: dict = Depends(get_current_active_user),
 ):
     """Update a book"""
-    
+
     try:
         # Check book exists and belongs to user
-        existing_book = await db.books.find_one({
-            "_id": ObjectId(book_id),
-            "user_id": current_user["_id"]
-        })
-        
+        existing_book = await db.books.find_one(
+            {"_id": ObjectId(book_id), "user_id": current_user["_id"]}
+        )
+
         if not existing_book:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Book not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Book not found"
             )
-        
-        # Build update document (only include non-None fields)
+
         update_data = {
-            k: v for k, v in book_data.dict(exclude_unset=True).items() 
-            if v is not None
+            k: v for k, v in book_data.model_dump(exclude_unset=True).items() if v is not None
         }
-        
+
         if not update_data:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="No data to update"
             )
-        
+
         update_data["updated_at"] = datetime.now(timezone.utc)
-        
+
         # Update book
-        await db.books.update_one(
-            {"_id": ObjectId(book_id)},
-            {"$set": update_data}
-        )
-        
+        await db.books.update_one({"_id": ObjectId(book_id)}, {"$set": update_data})
+
         # Fetch updated book
         updated_book = await db.books.find_one({"_id": ObjectId(book_id)})
-        
+
         return serialize_book(updated_book)
-        
+
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
 @router.delete("/book/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_book(
-    book_id: str,
-    current_user: dict = Depends(get_current_active_user)
+    book_id: str, current_user: dict = Depends(get_current_active_user)
 ):
     """Delete a book"""
-    
+
     try:
         # Check book exists and belongs to user
-        book = await db.books.find_one({
-            "_id": ObjectId(book_id),
-            "user_id": current_user["_id"]
-        })
-        
+        book = await db.books.find_one(
+            {"_id": ObjectId(book_id), "user_id": current_user["_id"]}
+        )
+
         if not book:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Book not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Book not found"
             )
-        
+
         # Delete cover image from Cloudinary if exists
         if book.get("cover_image"):
             try:
                 await delete_cloudinary_image(book["cover_image"])
             except Exception as e:
                 print(f"Failed to delete image: {e}")
-        
+
         # Delete book
         await db.books.delete_one({"_id": ObjectId(book_id)})
-        
+
         return None
-        
+
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid book ID"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid book ID"
         )
 
 
 @router.patch("/book/{book_id}/favorite", response_model=BookResponse)
 async def toggle_favorite(
-    book_id: str,
-    current_user: dict = Depends(get_current_active_user)
+    book_id: str, current_user: dict = Depends(get_current_active_user)
 ):
     """Toggle book favorite status"""
-    
+
     try:
-        book = await db.books.find_one({
-            "_id": ObjectId(book_id),
-            "user_id": current_user["_id"]
-        })
-        
+        book = await db.books.find_one(
+            {"_id": ObjectId(book_id), "user_id": current_user["_id"]}
+        )
+
         if not book:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Book not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Book not found"
             )
-        
+
         # Toggle favorite
         new_favorite_status = not book.get("is_favorite", False)
-        
+
         await db.books.update_one(
             {"_id": ObjectId(book_id)},
             {
                 "$set": {
                     "is_favorite": new_favorite_status,
-                    "updated_at": datetime.now(timezone.utc)
+                    "updated_at": datetime.now(timezone.utc),
                 }
-            }
+            },
         )
-        
+
         # Fetch updated book
         updated_book = await db.books.find_one({"_id": ObjectId(book_id)})
-        
+
         return serialize_book(updated_book)
-        
+
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid book ID"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid book ID"
         )
 
 
@@ -438,54 +410,48 @@ async def toggle_favorite(
 async def upload_cover_image(
     book_id: str,
     file: UploadFile = File(None),
-    current_user: dict = Depends(get_current_active_user)
+    current_user: dict = Depends(get_current_active_user),
 ):
     """Upload book cover image"""
-    
+
     try:
         # Check book exists
-        book = await db.books.find_one({
-            "_id": ObjectId(book_id),
-            "user_id": current_user["_id"]
-        })
-        
+        book = await db.books.find_one(
+            {"_id": ObjectId(book_id), "user_id": current_user["_id"]}
+        )
+
         if not book:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Book not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Book not found"
             )
-        
+
         # Delete old image if exists
         if book.get("cover_image"):
             try:
                 await delete_cloudinary_image(book["cover_image"])
             except Exception as e:
                 print(f"Failed to delete old image: {e}")
-        
+
         # Upload new image
         image_url = await upload_book_cover(file)
-        
+
         # Update book
         await db.books.update_one(
             {"_id": ObjectId(book_id)},
             {
                 "$set": {
                     "cover_image": image_url,
-                    "updated_at": datetime.now(timezone.utc)
+                    "updated_at": datetime.now(timezone.utc),
                 }
-            }
+            },
         )
-        
+
         # Fetch updated book
         updated_book = await db.books.find_one({"_id": ObjectId(book_id)})
-        
+
         return serialize_book(updated_book)
-        
+
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
-    
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))

@@ -23,9 +23,21 @@ export const booksApi = {
       }
     }
     // Convert numeric fields from string to number
-    if (data.rating !== null && data.rating !== undefined) data.rating = parseFloat(data.rating) || 0;
-    if (data.page_count) data.page_count = parseInt(data.page_count);
-    if (data.publication_year) data.publication_year = parseInt(data.publication_year);
+    if (data.rating !== null && data.rating !== undefined)
+      data.rating = parseFloat(data.rating) || 0;
+
+    if (data.page_count)
+      data.page_count = parseInt(data.page_count);
+
+    if (data.publication_year)
+      data.publication_year = parseInt(data.publication_year);
+
+    if (data.reading_started)
+      data.reading_started = new Date(`${data.reading_started}T00:00:00Z`).toISOString();
+
+    if (data.reading_finished)
+      data.reading_finished = new Date(`${data.reading_finished}T00:00:00Z`).toISOString();
+
 
     const response = await api.post('/books/', data);
 
@@ -42,19 +54,31 @@ export const booksApi = {
     return response.data;
   },
 
-  // Update book — sends JSON (cover image uploaded separately)
+  // Update book
   updateBook: async (id, formData) => {
-    // Convert FormData to a plain JSON object
     const data = {};
     for (const [key, value] of formData.entries()) {
       if (key !== 'cover_image') {
-        data[key] = value === '' ? null : value;
+        if (value !== '' && value !== null && value !== undefined) {
+          data[key] = value;
+        }
       }
     }
-    // Convert numeric fields from string to number
-    if (data.rating !== null && data.rating !== undefined) data.rating = parseFloat(data.rating) || 0;
-    if (data.page_count) data.page_count = parseInt(data.page_count);
-    if (data.publication_year) data.publication_year = parseInt(data.publication_year);
+
+    if (data.rating !== undefined)
+      data.rating = parseFloat(data.rating);
+
+    if (data.page_count !== undefined)
+      data.page_count = parseInt(data.page_count);
+
+    if (data.publication_year !== undefined)
+      data.publication_year = parseInt(data.publication_year);
+
+    if (data.reading_started)
+      data.reading_started = new Date(`${data.reading_started}T00:00:00Z`).toISOString();
+
+    if (data.reading_finished)
+      data.reading_finished = new Date(`${data.reading_finished}T00:00:00Z`).toISOString();
 
     const response = await api.put(`/books/book/${id}`, data);
 

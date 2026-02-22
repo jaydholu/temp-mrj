@@ -157,7 +157,7 @@ const Home = () => {
                   Average Rating
                 </div>
                 <div className="text-sm text-dark-600 dark:text-dark-400">
-                  Across {stats.total_books} books
+                  Across rated {stats.books_rated_count || 0} books
                 </div>
               </div>
             </div>
