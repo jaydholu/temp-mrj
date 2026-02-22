@@ -174,7 +174,7 @@ const About = () => {
                 various apps.
               </p>
               <p>
-                We wanted something better—a dedicated space that feels like your own personal
+                We wanted something better; a dedicated space that feels like your own personal
                 library, where every book you've read has a home, and where you can see your
                 reading journey unfold over time.
               </p>

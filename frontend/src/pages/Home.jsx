@@ -14,15 +14,16 @@ import { toast } from '../components/common/Toast';
 import { useBooks } from '../hooks/useBooks';
 
 const Home = () => {
-  const { books, stats, loading, deleteBook, toggleFavorite, searchBooks, fetchStats } = useBooks();
+  const { books, stats, loading, fetchBooks, deleteBook, toggleFavorite, fetchStats } = useBooks();
   const [showFilters, setShowFilters] = useState(false);
   const [currentFilters, setCurrentFilters] = useState({});
+  const [sortBy, setSortBy] = useState('date_desc');
 
   useEffect(() => {
     const loadInitialData = async () => {
       try {
         await Promise.all([
-          fetchBooks({ sort: sortBy }),
+          fetchBooks({ sort: 'date_desc' }),
           fetchStats()
         ]);
       } catch (error) {
@@ -49,7 +50,8 @@ const Home = () => {
     }
   };
 
-  const handleSortChange = async (newSort) => {
+  const handleSortChange = async (e) => {
+    const newSort = e.target.value;
     setSortBy(newSort);
     try {
       await fetchBooks({ ...currentFilters, sort: newSort });
@@ -77,6 +79,9 @@ const Home = () => {
     }
   };
 
+  // Extract books array from paginated response
+  const bookList = Array.isArray(books) ? books : (books?.books || []);
+
   return (
     <div className="min-h-screen pt-4 bg-gradient-to-br from-primary-50 via-white to-primary-100 
                   dark:from-dark-950 dark:via-dark-900 dark:to-dark-950">
@@ -101,7 +106,7 @@ const Home = () => {
       </Hero>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Stats Section */}
         <motion.div
@@ -118,7 +123,7 @@ const Home = () => {
           />
           <StatsCard
             title="Currently Reading"
-            value={stats?.currently_reading || 0}
+            value={stats?.books_reading || 0}
             icon={BookOpen}
             color="primary"
             index={3}
@@ -132,7 +137,7 @@ const Home = () => {
           />
           <StatsCard
             title="Favorites"
-            value={stats?.favorites_count || 0}
+            value={stats?.favorite_books || 0}
             icon={Heart}
             color="primary"
             index={2}
@@ -178,22 +183,27 @@ const Home = () => {
           <div className="flex items-center justify-between">
             <h2 className="font-bold text-4xl text-primary-500">
               My Library
-              {books.length > 0 && (
+              {bookList.length > 0 && (
                 <span className="ml-3 text-lg font-normal text-dark-600 dark:text-dark-400">
-                  ({books.length} {books.length === 1 ? 'book' : 'books'})
+                  has <span className="font-bold text-dark-700 dark:text-dark-200">{bookList.length}</span> {bookList.length === 1 ? 'book' : 'books'}!
                 </span>
               )}
             </h2>
 
-            {books.length > 0 && (
+            {bookList.length > 0 && (
               <div className="flex gap-2">
-                <select className="input-field text-sm py-2">
+                <select
+                  className="input-field text-sm py-2"
+                  value={sortBy}
+                  onChange={handleSortChange}
+                >
                   <option value="date_desc">Recently Added</option>
                   <option value="date_asc">Oldest First</option>
+                  <option value="rating_desc">Highest Rated</option>
                   <option value="title_asc">Title (A-Z)</option>
                   <option value="title_desc">Title (Z-A)</option>
-                  <option value="rating_desc">Highest Rated</option>
-                  <option value="rating_asc">Lowest Rated</option>
+                  <option value="author_asc">Author (A-Z)</option>
+                  <option value="author_desc">Author (Z-A)</option>
                 </select>
               </div>
             )}
@@ -205,7 +215,7 @@ const Home = () => {
                 <BookCardSkeleton key={i} />
               ))}
             </div>
-          ) : books.length === 0 ? (
+          ) : bookList.length === 0 ? (
             <EmptyState
               icon={BookOpen}
               title="No books yet"
@@ -220,7 +230,7 @@ const Home = () => {
             />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {books.map((book, index) => (
+              {bookList.map((book, index) => (
                 <BookCard
                   key={book.id}
                   book={book}

@@ -321,7 +321,7 @@ const BookForm = ({ initialData, onSubmit, loading = false }) => {
             <StarRating
               rating={formData.rating}
               onChange={(value) => setFormData(prev => ({ ...prev, rating: value }))}
-              size="lg"
+              size="xl"
               showValue
             />
           </div>

@@ -32,7 +32,7 @@ const BookCard = ({ book, onDelete, onFavoriteToggle, index = 0 }) => {
         className="group relative"
       >
         <div className="card-hover overflow-hidden h-full flex flex-col">
-          
+
           {/* Cover Image Section */}
           <div className="relative h-80 overflow-hidden bg-gradient-to-br from-dark-100 to-dark-200 dark:from-dark-800 dark:to-dark-900">
             {book.cover_image ? (
@@ -55,12 +55,12 @@ const BookCard = ({ book, onDelete, onFavoriteToggle, index = 0 }) => {
                   animate={{ y: [0, -10, 0] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  <svg className="w-20 h-20 mb-4 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
-                          d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  <svg className="w-20 h-20 mb-4 opacity-80 text-dark-500 dark:text-dark-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                   </svg>
                 </motion.div>
-                <p className="text-lg font-semibold text-center px-4 line-clamp-2">
+                <p className="font-semibold text-dark-500 dark:text-dark-300 text-lg text-center px-4 line-clamp-2">
                   {book.title}
                 </p>
               </div>
@@ -94,20 +94,17 @@ const BookCard = ({ book, onDelete, onFavoriteToggle, index = 0 }) => {
 
           {/* Book Info Section */}
           <div className="flex-1 flex flex-col p-5 space-y-3">
-            
+
             {/* Title & Author */}
             <div className="space-y-1">
               <h3 className="font-bold text-lg leading-tight line-clamp-2 text-dark-900 dark:text-dark-50">
-                <Link 
-                  to={`/books/${book.id}`}
-                  className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
-                >
+                <Link to={`/books/${book.id}`} className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                   {book.title}
                 </Link>
               </h3>
               {book.author && (
-                <p className="text-sm text-dark-600 dark:text-dark-400 flex items-center gap-1">
-                  <User size={14} />
+                <p className="text-sm text-dark-700 dark:text-dark-300 flex items-center gap-1">
+                  <span className="text-dark-500">by</span>
                   <span className="italic">{book.author}</span>
                 </p>
               )}
@@ -115,16 +112,14 @@ const BookCard = ({ book, onDelete, onFavoriteToggle, index = 0 }) => {
 
             {/* Rating */}
             {book.rating > 0 && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center gap-2">
                 <StarRating rating={book.rating} size="sm" readonly />
-                <span className="text-sm font-medium text-dark-600 dark:text-dark-400">
-                  {book.rating.toFixed(1)}
-                </span>
+                <span className="text-sm font-medium text-dark-700 dark:text-dark-300"> {book.rating.toFixed(1)} </span>
               </div>
             )}
 
             {/* Genre & Date */}
-            <div className="flex flex-wrap gap-2 text-xs">
+            {/* <div className="flex flex-wrap gap-2 text-xs">
               {book.genre && (
                 <span className="px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 
                                rounded-full font-medium">
@@ -138,10 +133,10 @@ const BookCard = ({ book, onDelete, onFavoriteToggle, index = 0 }) => {
                   {format(new Date(book.reading_started), 'MMM yyyy')}
                 </span>
               )}
-            </div>
+            </div> */}
 
             {/* Page count & Format */}
-            {(book.page_count || book.format) && (
+            {/* {(book.page_count || book.format) && (
               <div className="flex gap-2 text-xs text-dark-500 dark:text-dark-500">
                 {book.page_count && (
                   <span>{book.page_count} pages</span>
@@ -151,17 +146,17 @@ const BookCard = ({ book, onDelete, onFavoriteToggle, index = 0 }) => {
                   <span className="capitalize">{book.format}</span>
                 )}
               </div>
-            )}
+            )} */}
 
             {/* Actions */}
             <div className="pt-3 mt-auto border-t border-dark-200 dark:border-dark-800">
-              <div className="flex items-center justify-center gap-2">
-                
+              <div className="flex items-center justify-center gap-4">
+
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                   <Link
                     to={`/books/${book.id}`}
-                    className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400
-                             flex items-center justify-center hover:bg-blue-100 dark:hover:bg-blue-900/40 
+                    className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/20 border-blue-500 text-blue-600 dark:text-blue-400
+                             flex items-center justify-center hover:border-blue-600 hover:bg-blue-200 dark:hover:bg-blue-900/40 
                              transition-colors group/btn"
                     title="View Details"
                   >
@@ -172,8 +167,8 @@ const BookCard = ({ book, onDelete, onFavoriteToggle, index = 0 }) => {
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                   <Link
                     to={`/books/${book.id}/edit`}
-                    className="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400
-                             flex items-center justify-center hover:bg-green-100 dark:hover:bg-green-900/40 
+                    className="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400
+                             flex items-center justify-center hover:bg-green-200 dark:hover:bg-green-900/40 
                              transition-colors group/btn"
                     title="Edit Book"
                   >
@@ -184,8 +179,8 @@ const BookCard = ({ book, onDelete, onFavoriteToggle, index = 0 }) => {
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                   <button
                     onClick={() => setShowDeleteDialog(true)}
-                    className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400
-                             flex items-center justify-center hover:bg-red-100 dark:hover:bg-red-900/40 
+                    className="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400
+                             flex items-center justify-center hover:bg-red-200 dark:hover:bg-red-900/40 
                              transition-colors group/btn"
                     title="Delete Book"
                   >
@@ -217,7 +212,7 @@ const BookCard = ({ book, onDelete, onFavoriteToggle, index = 0 }) => {
         title="Delete Book?"
         message={
           <>
-            Are you sure you want to delete <strong>"{book.title}"</strong>? 
+            Are you sure you want to delete <strong>"{book.title}"</strong>?
             This action cannot be undone.
           </>
         }

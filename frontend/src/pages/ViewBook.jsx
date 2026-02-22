@@ -99,15 +99,9 @@ const ViewBook = () => {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="mb-6"
+          className="mb-6 mt-12"
         >
-          <Button
-            variant="ghost"
-            icon={ArrowLeft}
-            onClick={() => navigate(-1)}
-          >
-            Back
-          </Button>
+          <Button variant="ghost" icon={ArrowLeft} onClick={() => navigate(-1)}> Back </Button>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -233,23 +227,11 @@ const ViewBook = () => {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <InfoItem icon={Hash} label="ISBN" value={book.isbn} />
+                <InfoItem  icon={Calendar} label="Publication Year" value={book.publication_year} />
                 <InfoItem icon={Building} label="Publisher" value={book.publisher} />
-                <InfoItem 
-                  icon={Calendar} 
-                  label="Publication Year" 
-                  value={book.publication_year} 
-                />
                 <InfoItem icon={Globe} label="Language" value={book.language} />
-                <InfoItem 
-                  icon={BookOpen} 
-                  label="Page Count" 
-                  value={book.page_count ? `${book.page_count} pages` : null} 
-                />
-                <InfoItem 
-                  icon={Package} 
-                  label="Format" 
-                  value={book.format ? book.format.charAt(0).toUpperCase() + book.format.slice(1) : null} 
-                />
+                <InfoItem icon={BookOpen} label="Page Count" value={book.page_count ? `${book.page_count} pages` : null} />
+                <InfoItem icon={Package} label="Format" value={book.format ? book.format.charAt(0).toUpperCase() + book.format.slice(1) : null} />
               </div>
             </div>
 
