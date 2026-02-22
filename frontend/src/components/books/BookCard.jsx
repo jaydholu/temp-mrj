@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Eye, Edit, Trash2, Calendar, User } from 'lucide-react';
-import { format } from 'date-fns';
 import { ConfirmDialog } from '../common/ConfirmDialog';
 import StarRating from './StarRating';
 import FavoriteButton from './FavoriteButton';
@@ -93,14 +92,12 @@ const BookCard = ({ book, onDelete, onFavoriteToggle, index = 0 }) => {
           </div>
 
           {/* Book Info Section */}
-          <div className="flex-1 flex flex-col p-5 space-y-3">
+          <div className="flex flex-col flex-1 p-5">
 
             {/* Title & Author */}
-            <div className="space-y-1">
+            <div className="flex-1 space-y-1 mb-3">
               <h3 className="font-bold text-lg leading-tight line-clamp-2 text-dark-900 dark:text-dark-50">
-                <Link to={`/books/${book.id}`} className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-                  {book.title}
-                </Link>
+                <Link to={`/books/${book.id}`} className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors"> {book.title} </Link>
               </h3>
               {book.author && (
                 <p className="text-sm text-dark-700 dark:text-dark-300 flex items-center gap-1">
@@ -111,12 +108,16 @@ const BookCard = ({ book, onDelete, onFavoriteToggle, index = 0 }) => {
             </div>
 
             {/* Rating */}
-            {book.rating > 0 && (
-              <div className="flex items-center justify-center gap-2">
-                <StarRating rating={book.rating} size="sm" readonly />
-                <span className="text-sm font-medium text-dark-700 dark:text-dark-300"> {book.rating.toFixed(1)} </span>
-              </div>
-            )}
+            <div className="h-7 flex items-center justify-center mb-3">
+              {book.rating > 0 && (
+                <div className="flex items-center gap-2">
+                  <StarRating rating={book.rating} size="sm" readonly />
+                  <span className="text-sm font-medium text-dark-700 dark:text-dark-300">
+                    {book.rating.toFixed(1)}
+                  </span>
+                </div>
+              )}
+            </div>
 
             {/* Genre & Date */}
             {/* <div className="flex flex-wrap gap-2 text-xs">
@@ -150,13 +151,19 @@ const BookCard = ({ book, onDelete, onFavoriteToggle, index = 0 }) => {
 
             {/* Actions */}
             <div className="pt-3 mt-auto border-t border-dark-200 dark:border-dark-800">
-              <div className="flex items-center justify-center gap-4">
+              <div className="flex items-center justify-center gap-3">
+
+                <FavoriteButton
+                  isFavorite={book.is_favorite}
+                  onToggle={() => onFavoriteToggle(book.id)}
+                  size="sm"
+                />
 
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                   <Link
                     to={`/books/${book.id}`}
-                    className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/20 border-blue-500 text-blue-600 dark:text-blue-400
-                             flex items-center justify-center hover:border-blue-600 hover:bg-blue-200 dark:hover:bg-blue-900/40 
+                    className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400
+                             flex items-center justify-center hover:bg-blue-200 dark:hover:bg-blue-900/40 
                              transition-colors group/btn"
                     title="View Details"
                   >

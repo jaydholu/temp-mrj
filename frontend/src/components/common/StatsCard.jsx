@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 
 const StatsCard = ({ title, value, icon: Icon, color = 'primary', trend, trendValue, index = 0 }) => {
   const [displayValue, setDisplayValue] = useState(0);
-  const [hasAnimated, setHasAnimated] = useState(false);
   const previousValue = useRef(value);
 
   const colorClasses = {
@@ -14,75 +13,38 @@ const StatsCard = ({ title, value, icon: Icon, color = 'primary', trend, trendVa
     favorite: 'from-red-500 to-red-600',
   };
 
-  const bgColorClasses = {
-    primary: 'bg-primary-50 dark:bg-primary-900/20',
-    success: 'bg-green-50 dark:bg-green-900/20',
-    info: 'bg-blue-50 dark:bg-blue-900/20',
-    warning: 'bg-orange-50 dark:bg-orange-900/20',
-    favorite: 'bg-red-50 dark:bg-red-900/20',
-  };
-
-  const iconColorClasses = {
-    primary: 'text-primary-600 dark:text-primary-400',
-    success: 'text-green-600 dark:text-green-400',
-    info: 'text-blue-600 dark:text-blue-400',
-    warning: 'text-orange-600 dark:text-orange-400',
-    favorite: 'text-red-600 dark:text-red-400',
-  };
-
   useEffect(() => {
-    if (previousValue.current !== value) {
-      const duration = 1000; // 1 second
-      const steps = 50;
-      const increment = (value - displayValue) / steps;
-      const stepDuration = duration / steps;
+    if (value === previousValue.current) return;
 
-      let currentStep = 0;
-      const timer = setInterval(() => {
-        currentStep++;
-        if (currentStep === steps) {
-          setDisplayValue(value);
-          clearInterval(timer);
-        } else {
-          setDisplayValue(prev => prev + increment);
-        }
-      }, stepDuration);
+    const startValue = previousValue.current ?? 0;
+    previousValue.current = value;
 
-      previousValue.current = value;
-      setHasAnimated(true);
+    const duration = 800;
+    const steps = 40;
+    const stepDuration = duration / steps;
+    const increment = (value - startValue) / steps;
 
-      return () => clearInterval(timer);
-    } else if (!hasAnimated) {
-      const duration = 1000;
-      const steps = 50;
-      const increment = value / steps;
-      const stepDuration = duration / steps;
+    let currentStep = 0;
+    setDisplayValue(startValue);
 
-      let currentStep = 0;
-      const timer = setInterval(() => {
-        currentStep++;
-        if (currentStep === steps) {
-          setDisplayValue(value);
-          clearInterval(timer);
-          setHasAnimated(true);
-        } else {
-          setDisplayValue(prev => prev + increment);
-        }
-      }, stepDuration);
+    const timer = setInterval(() => {
+      currentStep++;
+      if (currentStep >= steps) {
+        setDisplayValue(value);
+        clearInterval(timer);
+      } else {
+        setDisplayValue(prev => prev + increment);
+      }
+    }, stepDuration);
 
-      previousValue.current = value;
-
-      return () => clearInterval(timer);
-    } else {
-      setDisplayValue(value);
-    }
+    return () => clearInterval(timer);
   }, [value]);
 
   return (
     <motion.div
-      initial={hasAnimated ? false : { opacity: 0, y: 20 }}
-      animate={hasAnimated ? {} : { opacity: 1, y: 0 }}
-      transition={hasAnimated ? {} : { delay: index * 0.1 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: index * 0.08 }}
       className="card p-6 hover:shadow-xl transition-all duration-300 group"
     >
       <div className="flex items-center justify-between">
@@ -92,9 +54,8 @@ const StatsCard = ({ title, value, icon: Icon, color = 'primary', trend, trendVa
             {Math.round(displayValue)}
           </h3>
           {trend && trendValue && (
-            <div className={`mt-2 text-sm flex items-center gap-1 ${
-              trend === 'up' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
-            }`}>
+            <div className={`mt-2 text-sm flex items-center gap-1 ${trend === 'up' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+              }`}>
               <span>{trend === 'up' ? '↑' : '↓'}</span>
               <span>{trendValue}</span>
             </div>
@@ -106,18 +67,6 @@ const StatsCard = ({ title, value, icon: Icon, color = 'primary', trend, trendVa
           <Icon className="text-white" size={24} />
         </div>
       </div>
-
-      {/* Animated gradient border on hover */}
-      <motion.div
-        className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 -z-10"
-        style={{
-          background: `linear-gradient(135deg, ${colorClasses[color]})`,
-          filter: 'blur(20px)',
-        }}
-        initial={{ opacity: 0 }}
-        whileHover={{ opacity: 0.3 }}
-        transition={{ duration: 0.3 }}
-      />
     </motion.div>
   );
 };

@@ -119,28 +119,24 @@ const Home = () => {
             value={stats?.total_books || 0}
             icon={Book}
             color="primary"
-            index={0}
           />
           <StatsCard
             title="Currently Reading"
             value={stats?.books_reading || 0}
             icon={BookOpen}
             color="primary"
-            index={3}
           />
           <StatsCard
             title="Books Finished"
             value={stats?.books_finished || 0}
             icon={BookCheck}
             color="primary"
-            index={1}
           />
           <StatsCard
-            title="Favorites"
+            title="My Favorites"
             value={stats?.favorite_books || 0}
             icon={Heart}
             color="primary"
-            index={2}
           />
         </motion.div>
 
