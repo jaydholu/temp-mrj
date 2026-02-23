@@ -7,6 +7,15 @@ import Button from '../common/Button';
 import StarRating from './StarRating';
 import { toast } from '../common/Toast';
 
+const formatDateForInput = (dateString) => {
+  if (!dateString) return '';
+  const d = new Date(dateString);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const BookForm = ({ initialData, onSubmit, loading = false }) => {
   const [formData, setFormData] = useState({
     title: initialData?.title || '',
@@ -48,15 +57,6 @@ const BookForm = ({ initialData, onSubmit, loading = false }) => {
       reader.readAsDataURL(file);
     }
   });
-
-  const formatDateForInput = (dateString) => {
-    if (!dateString) return '';
-    const d = new Date(dateString);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;

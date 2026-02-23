@@ -38,7 +38,7 @@ const EditBook = () => {
     try {
       await updateBook(id, formData);
       toast.success('Book updated successfully!');
-      navigate(`/books/${id}`);
+      navigate('/');
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Failed to update book');
     } finally {
