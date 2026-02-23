@@ -49,7 +49,7 @@ const StatsCard = ({ title, value, icon: Icon, color = 'primary', trend, trendVa
     >
       <div className="flex items-center justify-between">
         <div className="flex-1">
-          <p className="font-bold text-lg text-dark-500 dark:text-dark-500 mb-2">{title}</p>
+          <p className="font-bold text-xl text-dark-600 dark:text-dark-400 mb-2">{title}</p>
           <h3 className="text-4xl font-bold text-dark-900 dark:text-dark-50">
             {Math.round(displayValue)}
           </h3>

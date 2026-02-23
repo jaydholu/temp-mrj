@@ -18,10 +18,10 @@ import AddBook from '../pages/AddBook';
 import ViewBook from '../pages/ViewBook';
 import EditBook from '../pages/EditBook';
 import Favorites from '../pages/Favorites';
-import ImportBooks from '../components/data/ImportBooks';
-import ExportBooks from '../components/data/ExportBooks';
 import Settings from '../pages/Settings';
 import About from '../pages/About';
+import ImportBooks from '../components/data/ImportBooks';
+import ExportBooks from '../components/data/ExportBooks';
 
 // Error Page
 import Error from '../pages/Error';
@@ -68,7 +68,6 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <RootLayout />,
-    errorElement: <Error type="404" />,
     children: [
       {
         index: true,

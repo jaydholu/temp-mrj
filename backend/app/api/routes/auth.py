@@ -20,7 +20,6 @@ from app.core.security import (
 router = APIRouter(tags=["Authentication"])
 
 
-@router.post("/signup")
 @router.post("/register")
 async def signup(data: SignupRequest):
     """Create new user account"""
@@ -87,7 +86,6 @@ async def signup(data: SignupRequest):
     }
 
 
-@router.post("/sign-in")
 @router.post("/login")
 async def login(data: LoginRequest, response: Response):
     """Login with email/user_name and password"""

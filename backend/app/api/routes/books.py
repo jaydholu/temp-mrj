@@ -260,7 +260,7 @@ async def get_book_stats(current_user: dict = Depends(get_current_active_user)):
     }
 
 
-@router.get("/book/{book_id}", response_model=BookResponse)
+@router.get("/{book_id}", response_model=BookResponse)
 async def get_book(book_id: str, current_user: dict = Depends(get_current_active_user)):
     """Get a single book by ID"""
 
@@ -282,7 +282,7 @@ async def get_book(book_id: str, current_user: dict = Depends(get_current_active
         )
 
 
-@router.put("/book/{book_id}", response_model=BookResponse)
+@router.put("/{book_id}", response_model=BookResponse)
 async def update_book(
     book_id: str,
     book_data: BookUpdateRequest,
@@ -327,7 +327,7 @@ async def update_book(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
-@router.delete("/book/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_book(
     book_id: str, current_user: dict = Depends(get_current_active_user)
 ):
@@ -364,7 +364,7 @@ async def delete_book(
         )
 
 
-@router.patch("/book/{book_id}/favorite", response_model=BookResponse)
+@router.patch("/{book_id}/favorite", response_model=BookResponse)
 async def toggle_favorite(
     book_id: str, current_user: dict = Depends(get_current_active_user)
 ):
@@ -406,7 +406,7 @@ async def toggle_favorite(
         )
 
 
-@router.post("/book/{book_id}/cover", response_model=BookResponse)
+@router.post("/{book_id}/cover-image", response_model=BookResponse)
 async def upload_cover_image(
     book_id: str,
     file: UploadFile = File(None),

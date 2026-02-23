@@ -33,7 +33,7 @@ const BookCard = ({ book, onDelete, onFavoriteToggle, index = 0 }) => {
         <div className="card-hover overflow-hidden h-full flex flex-col">
 
           {/* Cover Image Section */}
-          <div className="relative h-80 overflow-hidden bg-gradient-to-br from-dark-100 to-dark-200 dark:from-dark-800 dark:to-dark-900">
+          <div className="relative h-85 overflow-hidden bg-gradient-to-br from-dark-100 to-dark-200 dark:from-dark-800 dark:to-dark-900">
             {book.cover_image ? (
               <>
                 <img
@@ -64,14 +64,6 @@ const BookCard = ({ book, onDelete, onFavoriteToggle, index = 0 }) => {
                 </p>
               </div>
             )}
-
-            {/* Favorite Button */}
-            <div className="absolute top-3 right-3 z-10">
-              <FavoriteButton
-                isFavorite={book.is_favorite}
-                onToggle={() => onFavoriteToggle(book.id)}
-              />
-            </div>
 
             {/* Quick View Badge */}
             <motion.div
@@ -109,45 +101,19 @@ const BookCard = ({ book, onDelete, onFavoriteToggle, index = 0 }) => {
 
             {/* Rating */}
             <div className="h-7 flex items-center justify-center mb-3">
-              {book.rating > 0 && (
+              {book.rating > 0 ? (
                 <div className="flex items-center gap-2">
                   <StarRating rating={book.rating} size="sm" readonly />
                   <span className="text-sm font-medium text-dark-700 dark:text-dark-300">
                     {book.rating.toFixed(1)}
                   </span>
                 </div>
+              ) : (
+                <span className="text-xs italic text-dark-600 dark:text-dark-400">
+                  (You haven't rated yet)
+                </span>
               )}
             </div>
-
-            {/* Genre & Date */}
-            {/* <div className="flex flex-wrap gap-2 text-xs">
-              {book.genre && (
-                <span className="px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 
-                               rounded-full font-medium">
-                  {book.genre}
-                </span>
-              )}
-              {book.reading_started && (
-                <span className="px-3 py-1 bg-dark-100 dark:bg-dark-800 text-dark-600 dark:text-dark-400 
-                               rounded-full flex items-center gap-1">
-                  <Calendar size={12} />
-                  {format(new Date(book.reading_started), 'MMM yyyy')}
-                </span>
-              )}
-            </div> */}
-
-            {/* Page count & Format */}
-            {/* {(book.page_count || book.format) && (
-              <div className="flex gap-2 text-xs text-dark-500 dark:text-dark-500">
-                {book.page_count && (
-                  <span>{book.page_count} pages</span>
-                )}
-                {book.page_count && book.format && <span>•</span>}
-                {book.format && (
-                  <span className="capitalize">{book.format}</span>
-                )}
-              </div>
-            )} */}
 
             {/* Actions */}
             <div className="pt-3 mt-auto border-t border-dark-200 dark:border-dark-800">

@@ -8,7 +8,7 @@ from app.core.security import get_password_hash, verify_password
 from app.schemas.user import UserResponse, UserUpdateRequest, ChangePasswordRequest
 
 
-router = APIRouter(prefix="/user", tags=["Users"])
+router = APIRouter(prefix="/me", tags=["Users"])
 
 
 def serialize_user(user: dict) -> dict:
@@ -34,13 +34,13 @@ def serialize_user(user: dict) -> dict:
     }
 
 
-@router.get("/profile", response_model=UserResponse)
+@router.get("/", response_model=UserResponse)
 async def get_profile(current_user: dict = Depends(get_current_active_user)):
     """Get user profile"""
     return serialize_user(current_user)
 
 
-@router.put("/profile", response_model=UserResponse)
+@router.put("/", response_model=UserResponse)
 async def update_profile(
     update_data: UserUpdateRequest,
     current_user: dict = Depends(get_current_active_user)
@@ -73,36 +73,8 @@ async def update_profile(
     return serialize_user(updated_user)
 
 
-@router.put("/password")
-async def change_password(
-    password_data: ChangePasswordRequest,
-    current_user: dict = Depends(get_current_active_user)
-):
-    """Change user password"""
-    
-    # Verify current password
-    if not verify_password(password_data.current_password, current_user["password"]):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Current password is incorrect"
-        )
-    
-    # Update password
-    await db.users.update_one(
-        {"_id": current_user["_id"]},
-        {
-            "$set": {
-                "password": get_password_hash(password_data.new_password),
-                "updated_at": datetime.now(timezone.utc)
-            }
-        }
-    )
-    
-    return {"message": "Password changed successfully"}
-
-
-@router.post("/profile-picture", response_model=UserResponse)
-async def upload_profile_pic(
+@router.post("/picture", response_model=UserResponse)
+async def upload_profile_picture(
     file: UploadFile = File(...),
     current_user: dict = Depends(get_current_active_user)
 ):
@@ -135,8 +107,8 @@ async def upload_profile_pic(
     return serialize_user(updated_user)
 
 
-@router.delete("/profile-picture")
-async def delete_profile_pic(
+@router.delete("/picture")
+async def delete_profile_picture(
     current_user: dict = Depends(get_current_active_user)
 ):
     """Delete profile picture"""
@@ -167,7 +139,35 @@ async def delete_profile_pic(
     return {"message": "Profile picture deleted"}
 
 
-@router.delete("/account", status_code=status.HTTP_204_NO_CONTENT)
+@router.put("/password")
+async def change_password(
+        password_data: ChangePasswordRequest,
+        current_user: dict = Depends(get_current_active_user)
+):
+    """Change user password"""
+
+    # Verify current password
+    if not verify_password(password_data.current_password, current_user["password"]):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password is incorrect"
+        )
+
+    # Update password
+    await db.users.update_one(
+        {"_id": current_user["_id"]},
+        {
+            "$set": {
+                "password": get_password_hash(password_data.new_password),
+                "updated_at": datetime.now(timezone.utc)
+            }
+        }
+    )
+
+    return {"message": "Password changed successfully"}
+
+
+@router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_account(
     current_user: dict = Depends(get_current_active_user)
 ):

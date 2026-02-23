@@ -9,11 +9,11 @@ export const booksApi = {
 
   // Get single book
   getBook: async (id) => {
-    const response = await api.get(`/books/book/${id}`);
+    const response = await api.get(`/books/${id}`);
     return response.data;
   },
 
-  // Create book — sends JSON (cover image uploaded separately)
+  // Create book
   createBook: async (formData) => {
     // Convert FormData to a plain JSON object
     const data = {};
@@ -39,7 +39,7 @@ export const booksApi = {
       data.reading_finished = new Date(`${data.reading_finished}T00:00:00Z`).toISOString();
 
 
-    const response = await api.post('/books/', data);
+    const response = await api.post('/books', data);
 
     // If there's a cover image, upload it separately
     const coverImage = formData.get('cover_image');
@@ -80,7 +80,7 @@ export const booksApi = {
     if (data.reading_finished)
       data.reading_finished = new Date(`${data.reading_finished}T00:00:00Z`).toISOString();
 
-    const response = await api.put(`/books/book/${id}`, data);
+    const response = await api.put(`/books/${id}`, data);
 
     // If there's a cover image, upload it separately
     const coverImage = formData.get('cover_image');
@@ -97,13 +97,13 @@ export const booksApi = {
 
   // Delete book
   deleteBook: async (id) => {
-    const response = await api.delete(`/books/book/${id}`);
+    const response = await api.delete(`/books/${id}`);
     return response.data;
   },
 
   // Toggle favorite
   toggleFavorite: async (id) => {
-    const response = await api.patch(`/books/book/${id}/favorite`);
+    const response = await api.patch(`/books/${id}/favorite`);
     return response.data;
   },
 
@@ -124,7 +124,7 @@ export const booksApi = {
     const coverFormData = new FormData();
     coverFormData.append('file', file);
 
-    const response = await api.post(`/books/book/${id}/cover`, coverFormData, {
+    const response = await api.post(`/books/${id}/cover-image`, coverFormData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
