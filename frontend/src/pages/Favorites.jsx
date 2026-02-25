@@ -55,7 +55,6 @@ const Favorites = () => {
       <Hero
         title="Your Favorites"
         subtitle="Books that hold a special place in your heart"
-        icon={Heart}
         gradient={false}
       >
         <motion.div
@@ -72,7 +71,7 @@ const Favorites = () => {
       </Hero>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 border-t border-dark-600 dark:border-dark-400">
         
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -101,9 +100,9 @@ const Favorites = () => {
               className="mb-8"
             >
               <h2 className="text-2xl font-bold text-dark-900 dark:text-dark-50">
-                All Favorites
+                My Favorites
                 <span className="ml-3 text-lg font-normal text-dark-600 dark:text-dark-400">
-                  ({favorites.length} {favorites.length === 1 ? 'book' : 'books'})
+                  has <span className="font-bold text-dark-700 dark:text-dark-200">{favorites.length}</span> {favorites.length === 1 ? 'book' : 'books'}!
                 </span>
               </h2>
             </motion.div>

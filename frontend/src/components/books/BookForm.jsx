@@ -128,7 +128,7 @@ const BookForm = ({ initialData, onSubmit, loading = false }) => {
               <img
                 src={coverPreview}
                 alt="Cover preview"
-                className="w-full h-80 object-cover"
+                className="w-full h-[500px] object-cover"
               />
               <button
                 type="button"

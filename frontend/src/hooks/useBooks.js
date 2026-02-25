@@ -44,7 +44,14 @@ export const useBooks = () => {
     setError(null);
     try {
       const data = await booksApi.createBook(formData);
-      setBooks(prev => [data, ...prev]);
+      setBooks(prev => {
+        if (Array.isArray(prev)) {
+          return [data, ...prev];
+        } else if (prev?.books) {
+          return { ...prev, books: [data, ...prev.books], total: prev.total + 1 };
+        }
+        return [data];
+      });
       return data;
     } catch (err) {
       setError(err);
@@ -60,7 +67,17 @@ export const useBooks = () => {
     setError(null);
     try {
       const data = await booksApi.updateBook(id, formData);
-      setBooks(prev => prev.map(book => book.id === id ? data : book));
+      setBooks(prev => {
+        if (Array.isArray(prev)) {
+          return prev.map(book => book.id === id ? data : book);
+        } else if (prev?.books) {
+          return {
+            ...prev,
+            books: prev.books.map(book => book.id === id ? data : book)
+          };
+        }
+        return prev;
+      });
       return data;
     } catch (err) {
       setError(err);
@@ -76,7 +93,23 @@ export const useBooks = () => {
     setError(null);
     try {
       await booksApi.deleteBook(id);
-      setBooks(prev => prev.filter(book => book.id !== id));
+      setBooks(prev => {
+        if (!prev) return prev;
+        
+        if (prev?.books && Array.isArray(prev.books)) {
+          return {
+            ...prev,
+            books: prev.books.filter(book => book.id !== id),
+            total: Math.max(0, (prev.total || 0) - 1)
+          };
+        }
+        
+        if (Array.isArray(prev)) {
+          return prev.filter(book => book.id !== id);
+        }
+        
+        return prev;
+      });
     } catch (err) {
       setError(err);
       throw err;
@@ -89,9 +122,21 @@ export const useBooks = () => {
   const toggleFavorite = useCallback(async (id) => {
     try {
       const data = await booksApi.toggleFavorite(id);
-      setBooks(prev => prev.map(book => 
-        book.id === id ? { ...book, is_favorite: data.is_favorite } : book
-      ));
+      setBooks(prev => {
+        if (Array.isArray(prev)) {
+          return prev.map(book => 
+            book.id === id ? { ...book, is_favorite: data.is_favorite } : book
+          );
+        } else if (prev?.books) {
+          return {
+            ...prev,
+            books: prev.books.map(book => 
+              book.id === id ? { ...book, is_favorite: data.is_favorite } : book
+            )
+          };
+        }
+        return prev;
+      });
       return data;
     } catch (err) {
       setError(err);

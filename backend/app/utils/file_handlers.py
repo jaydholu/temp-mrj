@@ -58,12 +58,13 @@ class JSONHandler(FileHandler):
             if db is not None and user_id is not None:
                 existing_cursor = db.books.find(
                     {"user_id": user_id},
-                    {"title": 1, "author": 1}
+                    {"title": 1, "author": 1, "language": 1}
                 )
                 async for book in existing_cursor:
                     key = (
                         (book.get("title") or "").strip().lower(),
-                        (book.get("author") or "").strip().lower()
+                        (book.get("author") or "").strip().lower(),
+                        (book.get("language") or "english").strip().lower()
                     )
                     existing_keys.add(key)
 
@@ -74,15 +75,16 @@ class JSONHandler(FileHandler):
                     # Deduplication check
                     dup_key = (
                         (book.get("title") or "").strip().lower(),
-                        (book.get("author") or "").strip().lower()
+                        (book.get("author") or "").strip().lower(),
+                        (book.get("language") or "english").strip().lower()
                     )
                     
                     if dup_key in existing_keys:
                         skipped_titles.append(entry.get("title", "Unknown"))
                         errors.append({
                             "row": idx,
-                            "error": f"Duplicate entry skipped (same title & author already exists)",
-                            "data": entry.get("title", "Unknown")
+                            "error": f"Duplicate entry skipped (same title, author and book language already exists)",
+                            "data": {"title": entry.get("title", "Unknown"), "author": entry.get("author", "Unknown"), "language": entry.get("language", "English")}
                         })
                         continue
 
@@ -93,7 +95,7 @@ class JSONHandler(FileHandler):
                     errors.append({
                         "row": idx,
                         "error": str(e),
-                        "data": entry.get("title", "Unknown")
+                        "data": {"title": entry.get("title", "Unknown"), "author": entry.get("author", "Unknown"), "language": entry.get("language", "English")}
                     })
 
             return valid_books, errors
@@ -254,12 +256,13 @@ class CSVHandler(FileHandler):
             if db is not None and user_id is not None:
                 existing_cursor = db.books.find(
                     {"user_id": user_id},
-                    {"title": 1, "author": 1}
+                    {"title": 1, "author": 1, "language": 1}
                 )
                 async for book in existing_cursor:
                     key = (
                         (book.get("title") or "").strip().lower(),
-                        (book.get("author") or "").strip().lower()
+                        (book.get("author") or "").strip().lower(),
+                        (book.get("language") or "english").strip().lower()
                     )
                     existing_keys.add(key)
 
@@ -272,14 +275,15 @@ class CSVHandler(FileHandler):
 
                     dup_key = (
                         (book.get("title") or "").strip().lower(),
-                        (book.get("author") or "").strip().lower()
+                        (book.get("author") or "").strip().lower(),
+                        (book.get("language") or "english").strip().lower()
                     )
 
                     if dup_key in existing_keys:
                         errors.append({
                             "row": idx,
-                            "error": "Duplicate entry skipped (same title & author already exists)",
-                            "data": row.get("title", "Unknown")
+                            "error": "Duplicate entry skipped (same title, author, and book language already exists)",
+                            "data": {"title": row.get("title", "Unknown"), "author": row.get("author", "Unknown"), "language": row.get("language", "English")}
                         })
                         continue
 
@@ -290,7 +294,7 @@ class CSVHandler(FileHandler):
                     errors.append({
                         "row": idx,
                         "error": str(e),
-                        "data": row.get("title", "Unknown")
+                        "data": {"title": row.get("title", "Unknown"), "author": row.get("author", "Unknown"), "language": row.get("language", "English")}
                     })
 
             return valid_books, errors

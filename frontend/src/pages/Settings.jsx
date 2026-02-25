@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  User, Mail, Lock, Calendar, MapPin, Globe, 
+  User, Mail, Lock, Calendar, MapPin, Globe, Heart,
   BookOpen, Target, SlidersHorizontal, Image, Trash2, Save
 } from 'lucide-react';
 import PageHeader from '../components/common/PageHeader';

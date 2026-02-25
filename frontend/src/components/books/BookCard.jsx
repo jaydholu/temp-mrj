@@ -33,7 +33,7 @@ const BookCard = ({ book, onDelete, onFavoriteToggle, index = 0 }) => {
         <div className="card-hover overflow-hidden h-full flex flex-col">
 
           {/* Cover Image Section */}
-          <div className="relative h-85 overflow-hidden bg-gradient-to-br from-dark-100 to-dark-200 dark:from-dark-800 dark:to-dark-900">
+          <div className="relative h-[500px] overflow-hidden bg-gradient-to-br from-dark-100 to-dark-200 dark:from-dark-800 dark:to-dark-900">
             {book.cover_image ? (
               <>
                 <img

@@ -12,7 +12,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="relative mt-12 border-t border-dark-200 dark:border-dark-800">
+    <footer className="relative mt-8 border-t border-dark-200 dark:border-dark-800">
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary-200/30 to-primary-300/50 
                       dark:via-primary-900/10 dark:to-primary-900/20 pointer-events-none" />
