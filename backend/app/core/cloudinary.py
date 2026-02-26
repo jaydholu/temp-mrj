@@ -123,4 +123,4 @@ async def delete_cloudinary_image(image_url: str):
         cloudinary.uploader.destroy(public_id)
     except Exception as e:
         print(f"Failed to delete image: {e}")
-        # Don't raise error, just log it
+        

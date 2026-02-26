@@ -107,6 +107,8 @@ async def export_books_json(
 
     cursor = db.books.find(query).sort([("reading_started", -1)])
     books = await cursor.to_list(length=None)
+    username = current_user["user_name"]
+    print(f"Exporting {len(books)} books for user {username} (favorites only: {include_favorites_only})")
 
     if not books:
         raise HTTPException(
@@ -139,7 +141,7 @@ async def export_books_json(
 
     json_content = JSONHandler.generate_export(serialized_books)
     buffer = BytesIO(json_content.encode('utf-8'))
-    filename = f"books_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+    filename = f"{username}_books_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
 
     return StreamingResponse(
         buffer,
@@ -196,7 +198,7 @@ async def export_books_csv(
 
     csv_content = CSVHandler.generate_export(serialized_books)
     buffer = BytesIO(csv_content.encode('utf-8-sig'))  # BOM for Excel compatibility
-    filename = f"books_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    filename = f"books_backup_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
 
     return StreamingResponse(
         buffer,

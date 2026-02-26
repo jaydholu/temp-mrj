@@ -97,7 +97,7 @@ const ImportBooks = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100 
-                  dark:from-dark-950 dark:via-dark-900 dark:to-dark-950">
+                  dark:from-dark-950 dark:via-dark-900 dark:to-dark-950 mt-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
         <PageHeader
@@ -142,59 +142,6 @@ const ImportBooks = () => {
               </div>
             </div>
 
-            {/* File Drop Zone */}
-            <div className="card p-6">
-              <h3 className="text-lg font-bold text-dark-900 dark:text-dark-50 mb-4">Upload File</h3>
-
-              <div
-                {...getRootProps()}
-                className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all duration-300 ${isDragActive
-                  ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-                  : file
-                    ? 'border-green-500 bg-green-50 dark:bg-green-900/10'
-                    : 'border-dark-300 dark:border-dark-700 hover:border-primary-400 dark:hover:border-primary-600'
-                  }`}
-              >
-                <input {...getInputProps()} />
-
-                {file ? (
-                  <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="space-y-3">
-                    <div className="w-16 h-16 mx-auto bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-                      <CheckCircle className="text-green-600 dark:text-green-400" size={32} />
-                    </div>
-                    <p className="font-semibold text-dark-900 dark:text-dark-50">{file.name}</p>
-                    <p className="text-sm text-dark-500 dark:text-dark-400">
-                      {(file.size / 1024).toFixed(1)} KB · {format.toUpperCase()}
-                    </p>
-                    <button
-                      type="button"
-                      onClick={(e) => { e.stopPropagation(); setFile(null); setResult(null); }}
-                      className="text-sm text-red-500 hover:text-red-600 transition-colors"
-                    >
-                      Remove file
-                    </button>
-                  </motion.div>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="w-16 h-16 mx-auto bg-dark-100 dark:bg-dark-800 rounded-full flex items-center justify-center">
-                      <Upload className="text-dark-400" size={28} />
-                    </div>
-                    <div>
-                      <p className="text-lg font-medium text-dark-900 dark:text-dark-50">
-                        {isDragActive ? 'Drop your file here' : 'Drag & drop your file'}
-                      </p>
-                      <p className="text-sm text-dark-500 dark:text-dark-400 mt-1">or click to browse</p>
-                    </div>
-                    <p className="text-xs text-dark-400 dark:text-dark-500">
-                      Supports .json and .csv files up to 50MB
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="flex-1 flex flex-col gap-6 justify-between">
             <div className="space-y-6">
               {/* Template Download */}
               <div className="card p-5 bg-blue-50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-800">
@@ -260,9 +207,63 @@ const ImportBooks = () => {
                 </motion.div>
               )}
             </div>
+          </div>
+
+          <div className="flex-1 flex flex-col gap-8">
+            {/* File Drop Zone */}
+            <div className="card p-6">
+              <h3 className="text-lg font-bold text-dark-900 dark:text-dark-50 mb-4">Upload File</h3>
+
+              <div
+                {...getRootProps()}
+                className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all duration-300 ${isDragActive
+                  ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
+                  : file
+                    ? 'border-green-500 bg-green-50 dark:bg-green-900/10'
+                    : 'border-dark-300 dark:border-dark-700 hover:border-primary-400 dark:hover:border-primary-600'
+                  }`}
+              >
+                <input {...getInputProps()} />
+
+                {file ? (
+                  <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="space-y-3">
+                    <div className="w-16 h-16 mx-auto bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                      <CheckCircle className="text-green-600 dark:text-green-400" size={32} />
+                    </div>
+                    <p className="font-semibold text-dark-900 dark:text-dark-50">{file.name}</p>
+                    <p className="text-sm text-dark-500 dark:text-dark-400">
+                      {(file.size / 1024).toFixed(1)} KB · {format.toUpperCase()}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); setFile(null); setResult(null); }}
+                      className="text-sm text-red-500 hover:text-red-600 transition-colors"
+                    >
+                      Remove file
+                    </button>
+                  </motion.div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="w-16 h-16 mx-auto bg-dark-100 dark:bg-dark-800 rounded-full flex items-center justify-center">
+                      <Upload className="text-dark-400" size={28} />
+                    </div>
+                    <div>
+                      <p className="text-lg font-medium text-dark-900 dark:text-dark-50">
+                        {isDragActive ? 'Drop your file here' : 'Drag & drop your file'}
+                      </p>
+                      <p className="text-sm text-dark-500 dark:text-dark-400 mt-1">or click to browse</p>
+                    </div>
+                    <p className="text-xs text-dark-400 dark:text-dark-500">
+                      Supports .json and .csv files up to 50MB
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+            
             {/* Actions */}
-            <div className="flex flex-row items-center gap-3 justify-end">
-              <Button variant="secondary" icon={ArrowLeft} onClick={() => navigate(-1)}>
+            <div className="flex flex-row items-center gap-3 justify-between">
+              <Button variant="secondary" icon={ArrowLeft} onClick={() => navigate(-1)} className="basis-1/2">
                 Cancel
               </Button>
               <Button
@@ -271,6 +272,7 @@ const ImportBooks = () => {
                 onClick={handleImport}
                 loading={uploading}
                 disabled={!file}
+                className="basis-1/2"
               >
                 Import Books
               </Button>

@@ -40,13 +40,13 @@ const PageHeader = ({
       )}
 
       {/* Header content */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-8">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           className="space-y-2"
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             {Icon && (
               <div className="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center
                             shadow-lg shadow-primary-500/30">

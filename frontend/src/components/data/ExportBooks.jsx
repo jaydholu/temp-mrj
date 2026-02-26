@@ -44,7 +44,7 @@ const ExportBooks = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100 dark:from-dark-950 dark:via-dark-900 dark:to-dark-950">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-10">
         <PageHeader
           title="Export Books"
           description="Download your entire book collection as a file"
@@ -55,8 +55,8 @@ const ExportBooks = () => {
           ]}
         />
 
-        <div className="flex flex-row gap-6 space-around">
-          <div className="flex flex-col gap-6 flex-1">
+        <div className="flex flex-row gap-6">
+          <div className="flex flex-col gap-4 flex-1">
             {/* Format Selection */}
             <div className="card p-6">
               <h3 className="text-lg font-bold text-dark-900 dark:text-dark-50 mb-4">Export Format</h3>
@@ -117,7 +117,7 @@ const ExportBooks = () => {
             </div>
           </div>
 
-          <div className="flex flex-col space-around gap-y-56">
+          <div className="flex flex-col justify-between">
             {/* Info */}
             <div className="card p-5 space-y-2 text-sm text-dark-600 dark:text-dark-400">
               <p className="font-semibold text-dark-900 dark:text-dark-50">Export notes:</p>
@@ -128,8 +128,8 @@ const ExportBooks = () => {
             </div>
 
             {/* Actions Buttons */}
-            <div className="flex items-center justify-end gap-3">
-              <Button variant="secondary" icon={ArrowLeft} onClick={() => navigate(-1)}>
+            <div className="flex flex-row gap-4 ">
+              <Button variant="secondary" icon={ArrowLeft} onClick={() => navigate(-1)} className="basis-1/2">
                 Cancel
               </Button>
               <Button
@@ -137,6 +137,7 @@ const ExportBooks = () => {
                 icon={Download}
                 onClick={handleExport}
                 loading={exporting}
+                className="basis-1/2"
               >
                 Export {format.toUpperCase()}
               </Button>
