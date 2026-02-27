@@ -17,7 +17,7 @@ const Footer = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary-200/30 to-primary-300/50 
                       dark:via-primary-900/10 dark:to-primary-900/20 pointer-events-none" />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="relative max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
 
           {/* Brand Section */}

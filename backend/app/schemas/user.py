@@ -41,7 +41,7 @@ class UserUpdateRequest(BaseModel):
     @field_validator('gender')
     @classmethod
     def validate_gender(cls, v):
-        if v and v not in ['male', 'female', 'other', 'prefer_not_to_say']:
+        if v and v.lower() not in ['male', 'female', 'other', 'prefer_not_to_say']:
             raise ValueError('Invalid gender value')
         return v
     

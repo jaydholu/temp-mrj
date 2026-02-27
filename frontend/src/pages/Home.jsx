@@ -83,9 +83,7 @@ const Home = () => {
   const bookList = Array.isArray(books) ? books : (books?.books || []);
 
   return (
-    <div className="min-h-screen pt-4 pb-16 bg-gradient-to-br from-primary-50 via-white to-primary-100 
-                  dark:from-dark-950 dark:via-dark-900 dark:to-dark-950">
-
+    <div className="min-h-screen pt-4 pb-12 bg-gradient-to-br from-primary-50 via-white to-primary-100 dark:from-dark-950 dark:via-dark-900 dark:to-dark-950">
       {/* Hero Section */}
       <Hero
         title="My Reading Journey"

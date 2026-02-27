@@ -24,7 +24,7 @@ const Settings = () => {
 
   const [profileData, setProfileData] = useState({
     full_name: '',
-    username: '',
+    user_name: '',
     email: '',
     bio: '',
     birthdate: '',
@@ -52,8 +52,21 @@ const Settings = () => {
 
   const loadProfile = async () => {
     try {
-      const response = await api.get('/users/profile');
-      setProfileData(response.data);
+      const response = await api.get('/users/me');
+      setProfileData({
+        full_name: response.data.full_name || '',
+        user_name: response.data.user_name || '',
+        email: response.data.email || '',
+        bio: response.data.bio || '',
+        birthdate: response.data.birthdate || '',
+        gender: response.data.gender || '',
+        country: response.data.country || '',
+        city: response.data.city || '',
+        favorite_genre: response.data.favorite_genre || '',
+        favorite_book: response.data.favorite_book || '',
+        reading_goal: response.data.reading_goal || '',
+        hobbies: response.data.hobbies || '',
+      });
       setProfilePicturePreview(response.data.profile_picture);
     } catch (error) {
       toast.error('Failed to load profile');
@@ -91,18 +104,18 @@ const Settings = () => {
     setSaving(true);
     
     try {
-      const formData = new FormData();
-      Object.keys(profileData).forEach(key => {
-        if (profileData[key]) {
-          formData.append(key, profileData[key]);
-        }
-      });
+      await api.put('/users/me', profileData);
       
       if (profilePicture) {
-        formData.append('profile_picture', profilePicture);
+        const formData = new FormData();
+        formData.append('file', profilePicture);
+        await api.post('/users/me/picture', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
       }
 
-      await api.put('/users/profile', formData);
       await updateProfile();
       toast.success('Profile updated successfully!');
     } catch (error) {
@@ -122,7 +135,7 @@ const Settings = () => {
 
     setSaving(true);
     try {
-      await api.put('/users/password', {
+      await api.put('/users/me/password', {
         current_password: passwordData.current_password,
         new_password: passwordData.new_password,
       });
@@ -141,7 +154,7 @@ const Settings = () => {
 
   const handleDeleteProfilePicture = async () => {
     try {
-      await api.delete('/users/profile-picture');
+      await api.delete('/users/me/picture');
       setProfilePicture(null);
       setProfilePicturePreview(null);
       toast.success('Profile picture removed');
@@ -153,7 +166,7 @@ const Settings = () => {
   const handleDeleteAccount = async () => {
     setDeleting(true);
     try {
-      await api.delete('/users/account');
+      await api.delete('/users/me/delete');
       toast.success('Account deleted successfully');
       logout();
     } catch (error) {
@@ -178,7 +191,7 @@ const Settings = () => {
     <div className="min-h-screen mt-10 bg-gradient-to-br from-primary-50 via-white to-primary-100 
                   dark:from-dark-950 dark:via-dark-900 dark:to-dark-950">
       
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         
         <PageHeader
           title="Settings"
@@ -239,7 +252,7 @@ const Settings = () => {
                         ) : (
                           <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 
                                         flex items-center justify-center text-white text-3xl font-bold">
-                            {profileData.name?.charAt(0)?.toUpperCase() || 'U'}
+                            {profileData.full_name?.charAt(0)?.toUpperCase() || 'U'}
                           </div>
                         )}
                       </div>
@@ -288,7 +301,7 @@ const Settings = () => {
                       label="Full Name"
                       name="full_name"
                       icon={User}
-                      value={profileData.name}
+                      value={profileData.full_name}
                       onChange={handleProfileChange}
                       placeholder="John Doe"
                     />
@@ -307,7 +320,7 @@ const Settings = () => {
                       label="User Name"
                       name="user_name"
                       icon={User}
-                      value={profileData.userid}
+                      value={profileData.user_name}
                       disabled
                       placeholder="johndoe123"
                     />
