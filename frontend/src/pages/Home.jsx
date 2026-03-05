@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Plus, Book, BookOpen, Heart, BookCheck } from 'lucide-react';
+import { Plus, Book, BookOpen, Heart, BookCheck, ScrollText } from 'lucide-react';
 import Hero from '../components/common/Hero';
 import StatsCard from '../components/common/StatsCard';
 import BookCard from '../components/books/BookCard';
@@ -96,8 +96,13 @@ const Home = () => {
             </Button>
           </Link>
           <Link to="/favorites">
-            <Button variant="secondary" icon={Heart} size="lg">
+            <Button variant="primary" icon={Heart} size="lg">
               View Favorites
+            </Button>
+          </Link>
+          <Link to="/wishlist">
+            <Button variant="primary" icon={ScrollText} size="lg">
+              View Wishlist
             </Button>
           </Link>
         </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Home, Plus, Heart, Database, Download, Upload,
+  Home, Plus, Heart, Database, Download, Upload, ScrollText,
   Settings, LogOut, Info, Menu, X, User
 } from 'lucide-react';
 import { useAuth } from "../../hooks/useAuth";
@@ -103,12 +103,13 @@ const Navbar = () => {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-8">
               <NavLink to="/" icon={Home}>Home</NavLink>
               {user && (
                 <>
                   <NavLink to="/add-book" icon={Plus}>Add Book</NavLink>
                   <NavLink to="/favorites" icon={Heart}>Favorites</NavLink>
+                  <NavLink to="/wishlist" icon={ScrollText}>Wishlist</NavLink>
 
                   {/* Data Dropdown */}
                   <div className="relative" ref={dataDropdownRef}>

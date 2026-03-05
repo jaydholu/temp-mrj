@@ -3,6 +3,7 @@ from fastapi.responses import StreamingResponse
 from typing import Literal
 from io import BytesIO
 from datetime import datetime, timezone
+import json
 
 from app.core.database import db
 from app.core.dependencies import get_current_active_user
@@ -259,4 +260,164 @@ async def download_csv_template():
         buffer,
         media_type="text/csv",
         headers={"Content-Disposition": "attachment; filename=books_import_template.csv"}
+    )
+
+
+# Add these endpoints to backend/app/api/routes/data.py
+
+@router.get("/export/user/json")
+async def export_user_data_json(
+    current_user: dict = Depends(get_current_active_user)
+):
+    """Export all user data (profile + books) as JSON"""
+
+    # Get user profile
+    user_data = {
+        "id": str(current_user["_id"]),
+        "full_name": current_user["full_name"],
+        "user_name": current_user["user_name"],
+        "email": current_user["email"],
+        "bio": current_user.get("bio"),
+        "birthdate": current_user.get("birthdate"),
+        "gender": current_user.get("gender"),
+        "country": current_user.get("country"),
+        "city": current_user.get("city"),
+        "favorite_genre": current_user.get("favorite_genre"),
+        "favorite_book": current_user.get("favorite_book"),
+        "reading_goal": current_user.get("reading_goal"),
+        "hobbies": current_user.get("hobbies"),
+        "theme": current_user.get("theme", "light"),
+        "created_at": current_user["created_at"],
+        "last_login": current_user.get("last_login"),
+    }
+
+    # Get all books
+    cursor = db.books.find({"user_id": current_user["_id"]}).sort([("reading_started", -1)])
+    books = await cursor.to_list(length=None)
+
+    serialized_books = []
+    for book in books:
+        serialized_books.append({
+            "id": str(book["_id"]),
+            "title": book["title"],
+            "author": book.get("author"),
+            "isbn": book.get("isbn"),
+            "genre": book.get("genre"),
+            "rating": book.get("rating", 0.0),
+            "description": book.get("description"),
+            "cover_image": book.get("cover_image"),
+            "reading_started": book["reading_started"].isoformat() if book.get("reading_started") else None,
+            "reading_finished": book.get("reading_finished").isoformat() if book.get("reading_finished") else None,
+            "is_favorite": book.get("is_favorite", False),
+            "page_count": book.get("page_count"),
+            "publisher": book.get("publisher"),
+            "publication_year": book.get("publication_year"),
+            "language": book.get("language", "English"),
+            "format": book.get("format"),
+            "created_at": book["created_at"].isoformat() if book.get("created_at") else None,
+            "updated_at": book["updated_at"].isoformat() if book.get("updated_at") else None
+        })
+
+    # Get wishlist items if collection exists
+    wishlist_items = []
+    try:
+        wishlist_cursor = db.wishlist.find({"user_id": current_user["_id"]}).sort([("priority", -1)])
+        wishlist = await wishlist_cursor.to_list(length=None)
+        
+        for item in wishlist:
+            wishlist_items.append({
+                "id": str(item["_id"]),
+                "title": item["title"],
+                "author": item.get("author"),
+                "isbn": item.get("isbn"),
+                "genre": item.get("genre"),
+                "priority": item.get("priority", 1),
+                "notes": item.get("notes"),
+                "price": item.get("price"),
+                "where_to_buy": item.get("where_to_buy"),
+                "created_at": item["created_at"].isoformat() if item.get("created_at") else None,
+                "updated_at": item["updated_at"].isoformat() if item.get("updated_at") else None,
+            })
+    except Exception as e:
+        print(f"Wishlist export error: {e}")
+
+    # Compile full export
+    export_data = {
+        "export_date": datetime.now(timezone.utc).isoformat(),
+        "user": user_data,
+        "books": serialized_books,
+        "wishlist": wishlist_items,
+        "stats": {
+            "total_books": len(serialized_books),
+            "total_wishlist_items": len(wishlist_items)
+        }
+    }
+
+    # Convert datetime objects to ISO format
+    def datetime_handler(obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        return str(obj)
+
+    json_content = json.dumps(export_data, indent=2, ensure_ascii=False, default=datetime_handler)
+    buffer = BytesIO(json_content.encode('utf-8'))
+    filename = f"{current_user['user_name']}_full_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+
+    return StreamingResponse(
+        buffer,
+        media_type="application/json",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+
+@router.get("/export/user/csv")
+async def export_user_data_csv(
+    current_user: dict = Depends(get_current_active_user)
+):
+    """Export user profile data as CSV"""
+
+    import csv
+    from io import StringIO
+
+    # Prepare user data for CSV
+    user_data = {
+        "Field": [],
+        "Value": []
+    }
+
+    fields = {
+        "User ID": str(current_user["_id"]),
+        "Full Name": current_user["full_name"],
+        "User Name": current_user["user_name"],
+        "Email": current_user["email"],
+        "Bio": current_user.get("bio", ""),
+        "Birthdate": str(current_user.get("birthdate", "")),
+        "Gender": current_user.get("gender", ""),
+        "Country": current_user.get("country", ""),
+        "City": current_user.get("city", ""),
+        "Favorite Genre": current_user.get("favorite_genre", ""),
+        "Favorite Book": current_user.get("favorite_book", ""),
+        "Reading Goal": str(current_user.get("reading_goal", "")),
+        "Hobbies": current_user.get("hobbies", ""),
+        "Theme": current_user.get("theme", "light"),
+        "Account Created": str(current_user.get("created_at", "")),
+        "Last Login": str(current_user.get("last_login", "")),
+    }
+
+    # Create CSV
+    output = StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Field", "Value"])
+    
+    for field, value in fields.items():
+        writer.writerow([field, value])
+
+    csv_content = output.getvalue()
+    buffer = BytesIO(csv_content.encode('utf-8-sig'))
+    filename = f"{current_user['user_name']}_profile_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+
+    return StreamingResponse(
+        buffer,
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
     )

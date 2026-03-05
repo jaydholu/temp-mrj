@@ -18,6 +18,8 @@ const ViewBook = () => {
   const navigate = useNavigate();
   const { getBook, deleteBook, toggleFavorite } = useBooks();
 
+  const [nextBook, setNextBook] = useState(null);
+  const [loadingNext, setLoadingNext] = useState(false);
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -25,6 +27,7 @@ const ViewBook = () => {
 
   useEffect(() => {
     loadBook();
+    loadNextBook();
   }, [id]);
 
   const loadBook = async () => {
@@ -36,6 +39,19 @@ const ViewBook = () => {
       navigate('/');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadNextBook = async () => {
+    setLoadingNext(true);
+    try {
+      const response = await api.get(`/books/${id}/next`);
+      setNextBook(response.data);
+    } catch (error) {
+      // No next book available
+      setNextBook(null);
+    } finally {
+      setLoadingNext(false);
     }
   };
 
@@ -101,7 +117,15 @@ const ViewBook = () => {
           className="flex flex-row justify-between mb-6 mt-12"
         >
           <Button variant="ghost" icon={ArrowLeft} onClick={() => navigate(-1)}> Back </Button>
-          <Button variant="primary" icon={ArrowRight} onClick={() => navigate('/books')}> Next Book </Button>
+          <Button
+            variant="primary"
+            icon={ArrowRight}
+            onClick={() => nextBook ? navigate(`/books/${nextBook.id}`) : null}
+            disabled={!nextBook || loadingNext}
+            loading={loadingNext}
+          >
+            {nextBook ? `Next: ${nextBook.title}` : 'No More Books'}
+          </Button>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -199,65 +223,61 @@ const ViewBook = () => {
           </motion.div>
 
           {/* Right Column - Cover & Actions */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="max-w-3xl space-y-2.5"
-            >
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="max-w-3xl space-y-2.5"
+          >
 
-              {/* Cover Image */}
-              <div className="card p-0 overflow-hidden">
-                <div className="relative">
-                  {book.cover_image ? (
-                    <img
-                      src={book.cover_image}
-                      alt={`${book.title} cover`}
-                      className="w-full h-[650px] object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-[600px] bg-gradient-to-br from-dark-100 to-dark-200 
+            {/* Cover Image */}
+            <div className="card p-0 overflow-hidden">
+              <div className="relative">
+                {book.cover_image ? (
+                  <img
+                    src={book.cover_image}
+                    alt={`${book.title} cover`}
+                    className="w-full h-[650px] object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-[600px] bg-gradient-to-br from-dark-100 to-dark-200 
                                 dark:from-dark-800 dark:to-dark-900 flex items-center justify-center">
-                      <BookOpen className="w-32 h-32 text-dark-400 dark:text-dark-600" />
-                    </div>
-                  )}
+                    <BookOpen className="w-32 h-32 text-dark-400 dark:text-dark-600" />
+                  </div>
+                )}
 
-                  {/* Favorite Button */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileHover={{ opacity: 1, y: 0 }}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <div className="absolute top-4 right-4">
-                      <FavoriteButton
-                        isFavorite={book.is_favorite}
-                        onToggle={handleFavoriteToggle}
-                        size="lg"
-                      />
-                    </div>
-                  </motion.div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="card p-6 space-y-3">
-                <Link to="">
-                  <Button variant="primary" icon={ArrowRight} className="w-full mb-3"> View Next Book </Button>
-                </Link>
-
-                <Link to={`/books/${id}/edit`}>
-                  <Button variant="secondary" icon={Edit} className="w-full"> Edit Book </Button>
-                </Link>
-
-                <Button
-                  variant="danger"
-                  icon={Trash2}
-                  onClick={() => setShowDeleteDialog(true)}
-                  className="w-full"
+                {/* Favorite Button */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileHover={{ opacity: 1, y: 0 }}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity"
                 >
-                  Delete Book
-                </Button>
+                  <div className="absolute top-4 right-4">
+                    <FavoriteButton
+                      isFavorite={book.is_favorite}
+                      onToggle={handleFavoriteToggle}
+                      size="lg"
+                    />
+                  </div>
+                </motion.div>
               </div>
-            </motion.div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="card p-6 space-y-3">
+              <Link to={`/books/${id}/edit`}>
+                <Button variant="primary" icon={Edit} className="w-full"> Edit Book </Button>
+              </Link>
+
+              <Button
+                variant="danger"
+                icon={Trash2}
+                onClick={() => setShowDeleteDialog(true)}
+                className="w-full"
+              >
+                Delete Book
+              </Button>
+            </div>
+          </motion.div>
         </div>
       </div>
 

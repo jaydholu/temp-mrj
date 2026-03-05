@@ -8,7 +8,7 @@ import logging
 
 from app.core.config import settings
 from app.core.database import db
-from app.api.routes import auth, books, data, users
+from app.api.routes import auth, books, data, users, wishlist
 
 
 # Configure logging
@@ -142,6 +142,7 @@ app.include_router(auth.router, prefix="/auth")
 app.include_router(books.router, prefix="/books")
 app.include_router(data.router, prefix="/data")
 app.include_router(users.router, prefix="/users")
+app.include_router(wishlist.router, prefix="/wishlist")
 
 
 # Health check endpoint

@@ -3,6 +3,9 @@ from bson import ObjectId
 from datetime import datetime, timezone
 import math
 
+from app.core.cloudinary import upload_book_cover, delete_cloudinary_image
+from app.core.database import db
+from app.core.dependencies import get_current_active_user
 from app.schemas.book import (
     BookCreateRequest,
     BookUpdateRequest,
@@ -10,9 +13,6 @@ from app.schemas.book import (
     BooksListResponse,
     BookStatsResponse,
 )
-from app.core.database import db
-from app.core.dependencies import get_current_active_user
-from app.core.cloudinary import upload_book_cover, delete_cloudinary_image
 
 
 router = APIRouter(tags=["Books"])
@@ -45,7 +45,8 @@ def serialize_book(book: dict) -> dict:
 
 @router.post("/", response_model=BookResponse, status_code=status.HTTP_201_CREATED)
 async def create_book(
-    book_data: BookCreateRequest, current_user: dict = Depends(get_current_active_user)
+    book_data: BookCreateRequest,
+    current_user: dict = Depends(get_current_active_user)
 ):
     """Create a new book entry"""
 
@@ -72,9 +73,7 @@ async def create_book(
     }
 
     result = await db.books.insert_one(new_book)
-
-    # Fetch created book
-    created_book = await db.books.find_one({"_id": result.inserted_id})
+    created_book = await db.books.find_one({"_id": result.inserted_id})     # Fetch created book
 
     return serialize_book(created_book)
 
@@ -261,7 +260,10 @@ async def get_book_stats(current_user: dict = Depends(get_current_active_user)):
 
 
 @router.get("/{book_id}", response_model=BookResponse)
-async def get_book(book_id: str, current_user: dict = Depends(get_current_active_user)):
+async def get_book(
+    book_id: str,
+    current_user: dict = Depends(get_current_active_user)
+):
     """Get a single book by ID"""
 
     try:
@@ -329,7 +331,8 @@ async def update_book(
 
 @router.delete("/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_book(
-    book_id: str, current_user: dict = Depends(get_current_active_user)
+    book_id: str,
+    current_user: dict = Depends(get_current_active_user)
 ):
     """Delete a book"""
 
@@ -366,7 +369,8 @@ async def delete_book(
 
 @router.patch("/{book_id}/favorite", response_model=BookResponse)
 async def toggle_favorite(
-    book_id: str, current_user: dict = Depends(get_current_active_user)
+    book_id: str,
+    current_user: dict = Depends(get_current_active_user)
 ):
     """Toggle book favorite status"""
 
@@ -455,3 +459,58 @@ async def upload_cover_image(
         raise
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+@router.get("/{book_id}/next", response_model=BookResponse)
+async def get_next_book(
+    book_id: str,
+    current_user: dict = Depends(get_current_active_user)
+):
+    """Get the next book in the user's library"""
+
+    try:
+        # Get current book
+        current_book = await db.books.find_one(
+            {"_id": ObjectId(book_id), "user_id": current_user["_id"]}
+        )
+
+        if not current_book:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Book not found"
+            )
+
+        # Find next book (by reading_started date, descending)
+        next_book = await db.books.find_one(
+            {
+                "user_id": current_user["_id"],
+                "_id": {"$ne": ObjectId(book_id)},
+                "reading_started": {"$lt": current_book["reading_started"]}
+            },
+            sort=[("reading_started", -1)]
+        )
+
+        # If no next book found, get the first book (wrap around)
+        if not next_book:
+            next_book = await db.books.find_one(
+                {
+                    "user_id": current_user["_id"],
+                    "_id": {"$ne": ObjectId(book_id)}
+                },
+                sort=[("reading_started", -1)]
+            )
+
+        if not next_book:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, 
+                detail="No other books in library"
+            )
+
+        return serialize_book(next_book)
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+        )
+    
